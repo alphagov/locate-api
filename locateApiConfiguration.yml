@@ -1,0 +1,114 @@
+###
+### Locate API configuration
+###
+
+http:
+
+    rootPath: "/*"
+
+    port: 9700
+
+    adminPort: 9701
+
+    requestLog:
+        # Settings for logging to stdout.
+        console:
+            # If true, write log statements to stdout.
+            enabled: true
+
+        # Settings for logging to a file.
+        file:
+            # If true, write log statements to a file.
+            enabled: true
+
+            # The file to which statements will be logged.
+            currentLogFilename: /var/log/ier/locate-api.log
+
+            # Turn off archiving
+            archive: false
+
+            logFormat: '%date{ISO8601} level=[%level] logger=[%logger] thread=[%thread] message=[%message] %replace(exception=[%xException]){''^exception=\[\]$'',''''}%n%nopex'
+
+logging:
+
+
+    loggers:
+
+        "uk.gov": INFO
+
+    # Settings for logging to stdout.
+    console:
+
+        # If true, write log statements to stdout.
+        enabled: true
+
+        # Do not display log statements below this threshold to stdout.
+        threshold: INFO
+
+        logFormat: '%date{ISO8601} level=[%level] logger=[%logger] thread=[%thread] message=[%message] %replace(exception=[%xException]){''^exception=\[\]$'',''''}%n%nopex'
+
+        # Settings for logging to a file.
+    file:
+
+        # If true, write log statements to a file.
+        enabled: true
+
+        # Do not write log statements below this threshold to the file.
+        threshold: INFO
+
+        # The file to which current statements will be logged.
+        currentLogFilename: /var/log/ier/locate-api.log
+
+        # Turn off archiving
+        archive: false
+
+        logFormat: '%date{ISO8601} level=[%level] logger=[%logger] thread=[%thread] message=[%message] %replace(exception=[%xException]){''^exception=\[\]$'',''''}%n%nopex'
+
+
+mongoConfiguration:
+
+    # CSV string of host names, e.g. "vm-db-1,vm-db-2,vm-db-3"
+    hosts: localhost
+
+    port: 27017
+
+    databaseName: locate
+
+    authDbName: admin
+
+    username: admin
+
+    password: password
+
+httpClientConfiguration:
+    # The socket timeout value. If a read or write to the underlying
+    # TCP/IP connection hasn't succeeded after this duration, a
+    # timeout exception is thrown.
+    timeout: 100ms
+
+    # The connection timeout value. If a TCP/IP connection cannot be
+    # established in this time, a timeout exception is thrown.
+    connectionTimeout: 100ms
+
+    # The time a TCP/IP connection to the server is allowed to
+    # persist before being explicitly closed.
+    timeToLive: 1 hour
+
+    # If true, cookies will be persisted in memory for the duration
+    # of the client's lifetime. If false, cookies will be ignored
+    # entirely.
+    cookiesEnabled: false
+
+    # The maximum number of connections to be held in the client's
+    # connection pool.
+    maxConnections: 1024
+
+    # The maximum number of connections per "route" to be held in
+    # the client's connection pool. A route is essentially a
+    # combination of hostname, port, configured proxies, etc.
+    maxConnectionsPerRoute: 1024
+
+    # The default value for a persistent connection's keep-alive.
+    # A value of 0 will result in connections being immediately
+    # closed after a response.
+    keepAlive: 0s

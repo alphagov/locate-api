@@ -1,0 +1,68 @@
+mongodb/mongodb-*.tgz
+target/
+target/*
+*.ipr
+*.iml
+*.iml.bak
+*.iws
+.vagrant/
+.idea/
+logs/
+node_modules/
+node_modules/*
+.DS_Store
+.DS_Store
+version.conf
+RUNNING_PID
+*.swp
+.idea_modules/
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+.target
+*.class
+.cache
+.gitconfig
+
+# Vagrant VM
+vagrant/.vagrant
+vagrant/*.deb
+vagrant/ertp-environments/*
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+scripts/bin/*
+ier-frontend
+ier-jobs/dwp-files
