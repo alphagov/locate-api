@@ -1,14 +1,13 @@
 package uk.gov.gds.locate.api.managed;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.yammer.dropwizard.lifecycle.Managed;
 
 public class ManagedMongo implements Managed {
 
-    private final Mongo mongo;
+    private final MongoClient mongo;
 
-    public ManagedMongo(Mongo mongo) {
-
+    public ManagedMongo(MongoClient mongo) {
         this.mongo = mongo;
     }
 
