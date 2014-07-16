@@ -74,12 +74,6 @@ mongoConfiguration:
 
     databaseName: locate
 
-    authDbName: admin
-
-    username: admin
-
-    password: password
-
 httpClientConfiguration:
     # The socket timeout value. If a read or write to the underlying
     # TCP/IP connection hasn't succeeded after this duration, a

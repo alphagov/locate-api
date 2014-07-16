@@ -1,13 +1,13 @@
 package uk.gov.gds.locate.api.resources;
 
-
-import com.yammer.dropwizard.assets.ResourceNotFoundException;
-import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
+import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.Address;
-import uk.gov.gds.locate.api.model.Credentials;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -15,9 +15,15 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class AddressResource {
 
+    private final AddressDao addressDao;
+
+    public AddressResource(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
+
     @GET
     @Timed
     public List<Address> fetchAddresses(@QueryParam("postcode") String postcode) throws Exception {
-        throw new ResourceNotFoundException(new Exception("Not implemented"));
+        return addressDao.findAllForPostcode(postcode);
     }
 }

@@ -1,10 +1,17 @@
 package uk.gov.gds.locate.api;
 
+import com.mongodb.DB;
+import com.mongodb.Mongo;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
+import org.mongojack.JacksonDBCollection;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
+import uk.gov.gds.locate.api.dao.AddressDao;
+import uk.gov.gds.locate.api.healthchecks.MongoHealthcheck;
+import uk.gov.gds.locate.api.managed.ManagedMongo;
+import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.resources.AddressResource;
 
 import javax.ws.rs.ext.ExceptionMapper;
@@ -25,8 +32,19 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     @Override
     public void run(LocateApiConfiguration configuration, Environment environment) throws Exception {
+        Mongo mongo = new Mongo(configuration.getMongoConfiguration().getHosts(), configuration.getMongoConfiguration().getPort());
+        environment.manage(new ManagedMongo(mongo));
+
+        DB db = mongo.getDB(configuration.getMongoConfiguration().getDatabaseName());
+        JacksonDBCollection<Address, String> addressCollection = JacksonDBCollection.wrap(db.getCollection("addresses"), Address.class, String.class);
+
+        AddressDao addressDao = new AddressDao(addressCollection);
+
+        environment.addResource(new AddressResource(addressDao));
+
+        environment.addHealthCheck(new MongoHealthcheck(mongo));
+
         removeDefaultExceptionMappers(environment);
-        environment.addResource(new AddressResource());
     }
 
     private void removeDefaultExceptionMappers(Environment environment) {

@@ -25,22 +25,6 @@ public class MongoConfiguration extends Configuration {
     @JsonProperty
     private String databaseName;
 
-    @Valid
-    @NotNull
-    @JsonProperty
-    private String username;
-
-    @Valid
-    @NotNull
-    @JsonProperty
-    private String password;
-
-    @Valid
-    @NotNull
-    @JsonProperty
-    private String authDbName;
-
-
     public String getHosts() {
         return hosts;
     }
@@ -51,17 +35,5 @@ public class MongoConfiguration extends Configuration {
 
     public String getDatabaseName() {
         return databaseName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getAuthDbName() {
-        return authDbName;
     }
 }
