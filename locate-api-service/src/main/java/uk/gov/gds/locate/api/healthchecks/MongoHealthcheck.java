@@ -3,12 +3,12 @@ package uk.gov.gds.locate.api.healthchecks;
 import com.mongodb.MongoClient;
 import com.yammer.metrics.core.HealthCheck;
 
-public class MongoHealthcheck extends HealthCheck {
+public class MongoHealthCheck extends HealthCheck {
 
     private final MongoClient mongo;
 
-    public MongoHealthcheck(MongoClient mongo) {
-        super("MongoHealthcheck");
+    public MongoHealthCheck(MongoClient mongo) {
+        super("MongoHealthCheck");
         this.mongo = mongo;
     }
 

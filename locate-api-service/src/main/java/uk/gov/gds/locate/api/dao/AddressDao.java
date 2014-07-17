@@ -16,7 +16,6 @@ public class AddressDao {
     }
 
     public List<Address> findAllForPostcode(String postcode) {
-        DBCursor<Address> found = addresses.find().is("postcode", postcode);
-        return found.toArray();
+        return addresses.find().is("postcode", postcode).toArray();
     }
 }

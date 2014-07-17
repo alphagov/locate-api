@@ -13,7 +13,7 @@ import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
-import uk.gov.gds.locate.api.healthchecks.MongoHealthcheck;
+import uk.gov.gds.locate.api.healthchecks.MongoHealthCheck;
 import uk.gov.gds.locate.api.managed.ManagedMongo;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
@@ -53,7 +53,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Healthchecks
          */
-        environment.addHealthCheck(new MongoHealthcheck(mongoClient));
+        environment.addHealthCheck(new MongoHealthCheck(mongoClient));
 
 
         /**

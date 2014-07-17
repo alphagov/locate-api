@@ -3,6 +3,7 @@ package uk.gov.gds.locate.api.authentication;
 import com.google.common.base.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static uk.gov.gds.locate.api.authentication.Obfuscated.getObfuscatedToken;
 
 public class BearerToken {
 
@@ -16,14 +17,10 @@ public class BearerToken {
         return bearerToken;
     }
 
-    public String getObfuscatedToken() {
-        return String.format("%s...%s", bearerToken.substring(0, 2), bearerToken.substring(bearerToken.length() - 2));
-    }
-
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("bearerToken", bearerToken)
+                .add("bearerToken", getObfuscatedToken(bearerToken))
                 .toString();
     }
 }

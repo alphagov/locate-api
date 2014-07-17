@@ -17,6 +17,15 @@ public class Address {
     @JsonProperty("presentation")
     private Presentation presentation;
 
+    public Address() {
+    }
+
+    public Address(String gssCode, String uprn, Presentation presentation) {
+        this.gssCode = gssCode;
+        this.uprn = uprn;
+        this.presentation = presentation;
+    }
+
     public String getGssCode() {
         return gssCode;
     }

@@ -4,11 +4,10 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.config.Environment;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.gds.locate.api.authentication.BearerTokenAuthInjectable;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
-import uk.gov.gds.locate.api.healthchecks.MongoHealthcheck;
+import uk.gov.gds.locate.api.healthchecks.MongoHealthCheck;
 import uk.gov.gds.locate.api.resources.AddressResource;
 
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class LocateApiServiceTest {
     @Test
     public void shouldAddMongoHealthcheckToEnvironment() throws Exception {
         locateApiService.run(configuration, environment);
-        verify(environment, times(1)).addHealthCheck(isA(MongoHealthcheck.class));
+        verify(environment, times(1)).addHealthCheck(isA(MongoHealthCheck.class));
     }
 
     @Test
