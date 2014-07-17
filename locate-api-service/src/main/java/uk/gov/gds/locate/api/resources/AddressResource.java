@@ -2,6 +2,8 @@ package uk.gov.gds.locate.api.resources;
 
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
@@ -19,6 +21,7 @@ import static uk.gov.gds.locate.api.services.AddressTransformationService.addres
 @Path("/locate/addresses")
 @Produces(MediaType.APPLICATION_JSON)
 public class AddressResource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddressResource.class);
 
     private final AddressDao addressDao;
 
@@ -29,6 +32,7 @@ public class AddressResource {
     @GET
     @Timed
     public List<SimpleAddress> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
+        LOGGER.info("request " + postcode);
         return addressToSimpleAddress(addressDao.findAllForPostcode(postcode));
     }
 }
