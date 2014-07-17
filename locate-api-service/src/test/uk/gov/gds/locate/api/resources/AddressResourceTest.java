@@ -14,17 +14,14 @@ import uk.gov.gds.locate.api.LocateExceptionMapper;
 import uk.gov.gds.locate.api.authentication.BearerToken;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.dao.AddressDao;
-import uk.gov.gds.locate.api.model.Address;
-import uk.gov.gds.locate.api.model.AuthorizationToken;
-import uk.gov.gds.locate.api.model.Presentation;
-import uk.gov.gds.locate.api.model.SimpleAddress;
+import uk.gov.gds.locate.api.model.*;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class AddressResourceTest extends ResourceTest {

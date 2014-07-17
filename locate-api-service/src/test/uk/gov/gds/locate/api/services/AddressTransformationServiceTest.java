@@ -1,8 +1,11 @@
 package uk.gov.gds.locate.api.services;
 
 import com.google.common.collect.ImmutableList;
+import org.fest.assertions.api.ListAssert;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import uk.gov.gds.locate.api.model.Address;
+import uk.gov.gds.locate.api.model.Details;
 import uk.gov.gds.locate.api.model.Presentation;
 import uk.gov.gds.locate.api.model.SimpleAddress;
 
