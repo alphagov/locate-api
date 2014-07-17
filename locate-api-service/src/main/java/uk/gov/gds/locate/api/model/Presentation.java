@@ -26,6 +26,18 @@ public class Presentation {
     @JsonProperty("postcode")
     private String postcode;
 
+    public Presentation() {
+    }
+
+    public Presentation(String property, String street, String locality, String town, String area, String postcode) {
+        this.property = property;
+        this.street = street;
+        this.locality = locality;
+        this.town = town;
+        this.area = area;
+        this.postcode = postcode;
+    }
+
     public String getProperty() {
         return property;
     }

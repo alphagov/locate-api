@@ -17,13 +17,14 @@ import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.Presentation;
+import uk.gov.gds.locate.api.model.SimpleAddress;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class AddressResourceTest extends ResourceTest {
@@ -48,7 +49,7 @@ public class AddressResourceTest extends ResourceTest {
     @Test
     public void shouldRejectAddressesFetchWithNoAuthCredentials() {
         try {
-            client().resource("/addresses").get(Object.class);
+            client().resource("/locate/addresses").get(Object.class);
             fail("Should have rejected an API call with no auth headers");
         } catch (UniformInterfaceException e) {
             assertThat(e.getResponse().getStatus(), Matchers.is(401));
@@ -59,7 +60,7 @@ public class AddressResourceTest extends ResourceTest {
     @Test
     public void shouldRejectAddressesFetchWithInvalidAuthCredentials() {
         try {
-            client().resource("/addresses").header("Authorization", inValidToken).get(Object.class);
+            client().resource("/locate/addresses").header("Authorization", inValidToken).get(Object.class);
             fail("Should have rejected an API call with no auth headers");
         } catch (UniformInterfaceException e) {
             assertThat(e.getResponse().getStatus(), Matchers.is(401));
@@ -70,7 +71,7 @@ public class AddressResourceTest extends ResourceTest {
     @Test
     public void shouldAllowAddressesFetchWithValidAuthCredentials() {
         try {
-            client().resource("/addresses").header("Authorization", validToken).get(Object.class);
+            client().resource("/locate/addresses").header("Authorization", validToken).get(Object.class);
         } catch (UniformInterfaceException e) {
             fail("Should have rejected an API call with no auth headers");
         }
@@ -78,7 +79,7 @@ public class AddressResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnAListOfAddressesForASuccessfulSearch() {
-        List<Address> result = client().resource("/addresses?postcode=" + validPostcode).header("Authorization", validToken).get(new GenericType<List<Address>>() {
+        List<SimpleAddress> result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", validToken).get(new GenericType<List<SimpleAddress>>() {
         });
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getGssCode()).isEqualTo(address.getGssCode());
@@ -88,7 +89,7 @@ public class AddressResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnAListOfAddressesForAnUnsuccessfulSearch() {
-        List<Address> result = client().resource("/addresses?postcode=" + inValidPostcode).header("Authorization", validToken).get(new GenericType<List<Address>>() {
+        List<SimpleAddress> result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", validToken).get(new GenericType<List<SimpleAddress>>() {
         });
         assertThat(result.size()).isEqualTo(0);
         verify(dao, times(1)).findAllForPostcode(inValidPostcode);

@@ -5,6 +5,7 @@ import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.model.SimpleAddress;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,7 +14,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/addresses")
+import static uk.gov.gds.locate.api.services.AddressTransformationService.addressToSimpleAddress;
+
+@Path("/locate/addresses")
 @Produces(MediaType.APPLICATION_JSON)
 public class AddressResource {
 
@@ -25,7 +28,7 @@ public class AddressResource {
 
     @GET
     @Timed
-    public List<Address> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
-        return addressDao.findAllForPostcode(postcode);
+    public List<SimpleAddress> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
+        return addressToSimpleAddress(addressDao.findAllForPostcode(postcode));
     }
 }
