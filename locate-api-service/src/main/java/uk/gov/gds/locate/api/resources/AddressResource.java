@@ -1,8 +1,10 @@
 package uk.gov.gds.locate.api.resources;
 
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.Address;
+import uk.gov.gds.locate.api.model.AuthorizationToken;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,7 +25,7 @@ public class AddressResource {
 
     @GET
     @Timed
-    public List<Address> fetchAddresses(@QueryParam("postcode") String postcode) throws Exception {
+    public List<Address> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
         return addressDao.findAllForPostcode(postcode);
     }
 }

@@ -7,12 +7,16 @@ import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import org.mongojack.JacksonDBCollection;
+import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
+import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
+import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
 import uk.gov.gds.locate.api.healthchecks.MongoHealthcheck;
 import uk.gov.gds.locate.api.managed.ManagedMongo;
 import uk.gov.gds.locate.api.model.Address;
+import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.resources.AddressResource;
 
 import javax.ws.rs.ext.ExceptionMapper;
@@ -58,6 +62,11 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         environment.addProvider(new LocateExceptionMapper());
 
         /**
+         * Authentication
+         */
+        environment.addProvider(new BearerTokenAuthProvider(new BearerTokenAuthenticator(configureAuthorizationTokenDao(db))));
+
+        /**
          * Better exception mappings
          */
         removeDefaultExceptionMappers(environment);
@@ -67,6 +76,10 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         MongoClient mongoClient = new MongoClient(config.getHosts(), config.getPort());
         environment.manage(new ManagedMongo(mongoClient));
         return mongoClient;
+    }
+
+    private AuthorizationTokenDao configureAuthorizationTokenDao(DB db) {
+        return new AuthorizationTokenDao(JacksonDBCollection.wrap(db.getCollection("authorizationToken"), AuthorizationToken.class, String.class));
     }
 
     private AddressDao configureAddressDao(DB db) {

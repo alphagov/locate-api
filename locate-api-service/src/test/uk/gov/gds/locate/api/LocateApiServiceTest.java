@@ -4,6 +4,8 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.config.Environment;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.gds.locate.api.authentication.BearerTokenAuthInjectable;
+import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
 import uk.gov.gds.locate.api.healthchecks.MongoHealthcheck;
@@ -50,6 +52,12 @@ public class LocateApiServiceTest {
     public void shouldAddCustomExceptionMapperToEnvironment() throws Exception {
         locateApiService.run(configuration, environment);
         verify(environment, times(1)).addProvider(isA(LocateExceptionMapper.class));
+    }
+
+    @Test
+    public void shouldAddAuthenticationProviders() throws Exception {
+        locateApiService.run(configuration, environment);
+        verify(environment, times(1)).addProvider(isA(BearerTokenAuthProvider.class));
     }
 
 }
