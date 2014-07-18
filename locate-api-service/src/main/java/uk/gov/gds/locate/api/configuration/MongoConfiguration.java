@@ -24,7 +24,12 @@ public class MongoConfiguration extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private String databaseName;
+    private String locateDatabase;
+
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String credentialsDatabase;
 
     @Valid
     @JsonProperty
@@ -42,8 +47,12 @@ public class MongoConfiguration extends Configuration {
         return port;
     }
 
-    public String getDatabaseName() {
-        return databaseName;
+    public String getLocateDatabase() {
+        return locateDatabase;
+    }
+
+    public String getCredentialsDatabase() {
+        return credentialsDatabase;
     }
 
     public String getUsername() {
@@ -54,18 +63,7 @@ public class MongoConfiguration extends Configuration {
         return password;
     }
 
-    public Boolean hasAuth() {
+    public Boolean requiresAuth() {
         return !Strings.isNullOrEmpty(this.username) && !Strings.isNullOrEmpty(this.password);
-    }
-
-    @Override
-    public String toString() {
-        return "MongoConfiguration{" +
-                "hosts='" + hosts + '\'' +
-                ", port=" + port +
-                ", databaseName='" + databaseName + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 }

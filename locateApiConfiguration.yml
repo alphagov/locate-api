@@ -72,7 +72,9 @@ mongoConfiguration:
 
     port: 27017
 
-    databaseName: locate
+    locateDatabase: locate
+
+    credentialsDatabase: locate-credentials
 
     username:
 

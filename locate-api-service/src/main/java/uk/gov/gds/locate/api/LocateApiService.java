@@ -25,7 +25,6 @@ import javax.ws.rs.ext.ExceptionMapper;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class LocateApiService extends Service<LocateApiConfiguration> {
@@ -49,7 +48,8 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          */
         MongoClient mongoClient = configureMongoClient(environment, configuration.getMongoConfiguration());
 
-        DB locateDb = locateDb(configuration.getMongoConfiguration(), mongoClient);
+        DB locateDb = setUpDb(configuration.getMongoConfiguration().getLocateDatabase(), configuration.getMongoConfiguration(), mongoClient);
+        DB credentialsDb = setUpDb(configuration.getMongoConfiguration().getCredentialsDatabase(), configuration.getMongoConfiguration(), mongoClient);
 
         /**
          * Resources
@@ -69,7 +69,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
-        environment.addProvider(new BearerTokenAuthProvider(new BearerTokenAuthenticator(configureAuthorizationTokenDao(locateDb))));
+        environment.addProvider(new BearerTokenAuthProvider(new BearerTokenAuthenticator(configureAuthorizationTokenDao(credentialsDb))));
 
         /**
          * Better exception mappings
@@ -84,10 +84,11 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         return mongoClient;
     }
 
-    private DB locateDb(MongoConfiguration config, MongoClient mongoClient) {
-        DB db = mongoClient.getDB(config.getDatabaseName());
 
-        if (config.hasAuth()) {
+    private DB setUpDb(String database, MongoConfiguration config, MongoClient mongoClient) {
+        DB db = mongoClient.getDB(database);
+
+        if (config.requiresAuth()) {
             db.authenticate(config.getUsername(), config.getPassword().toCharArray());
         }
 

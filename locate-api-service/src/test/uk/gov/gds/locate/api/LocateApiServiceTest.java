@@ -1,5 +1,6 @@
 package uk.gov.gds.locate.api;
 
+import com.mongodb.MongoException;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.config.Environment;
 import org.junit.Before;
@@ -25,7 +26,8 @@ public class LocateApiServiceTest {
 
     @Before
     public void setUp() {
-        when(mongoConfiguration.getDatabaseName()).thenReturn("locate");
+        when(mongoConfiguration.getLocateDatabase()).thenReturn("locate");
+        when(mongoConfiguration.getCredentialsDatabase()).thenReturn("locate");
         when(mongoConfiguration.getHosts()).thenReturn("localhost");
         when(mongoConfiguration.getPort()).thenReturn(27017);
 
@@ -57,6 +59,36 @@ public class LocateApiServiceTest {
     public void shouldAddAuthenticationProviders() throws Exception {
         locateApiService.run(configuration, environment);
         verify(environment, times(1)).addProvider(isA(BearerTokenAuthProvider.class));
+    }
+
+    @Test
+    public void shouldSetUpMongoAuthIfRequired() throws Exception {
+        when(mongoConfiguration.getUsername()).thenReturn("username");
+        when(mongoConfiguration.getPassword()).thenReturn("password");
+        when(mongoConfiguration.requiresAuth()).thenReturn(true);
+        try {
+            locateApiService.run(configuration, environment);
+        } catch (MongoException e) {
+            // expected as no mongo db  live
+            verify(mongoConfiguration, times(1)).getUsername();
+            verify(mongoConfiguration, times(1)).getPassword();
+        }
+    }
+
+    @Test
+    public void shouldNotSetUpMongoAuthIfNotRequired() throws Exception {
+        when(mongoConfiguration.requiresAuth()).thenReturn(false);
+        locateApiService.run(configuration, environment);
+        verify(mongoConfiguration, times(0)).getUsername();
+        verify(mongoConfiguration, times(0)).getPassword();
+    }
+
+    @Test
+    public void shouldSetUpBothCredentialsAndLocateDatabases() throws Exception {
+        when(mongoConfiguration.requiresAuth()).thenReturn(false);
+        locateApiService.run(configuration, environment);
+        verify(mongoConfiguration, times(1)).getLocateDatabase();
+        verify(mongoConfiguration, times(1)).getCredentialsDatabase();
     }
 
 }
