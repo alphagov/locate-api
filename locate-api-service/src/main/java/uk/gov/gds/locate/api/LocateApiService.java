@@ -7,6 +7,8 @@ import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import org.mongojack.JacksonDBCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
@@ -23,9 +25,12 @@ import javax.ws.rs.ext.ExceptionMapper;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class LocateApiService extends Service<LocateApiConfiguration> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocateApiService.class);
 
     public static void main(String[] args) throws Exception {
         new LocateApiService().run(args);
@@ -43,18 +48,18 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          * Mongo set up
          */
         MongoClient mongoClient = configureMongoClient(environment, configuration.getMongoConfiguration());
-        DB db = mongoClient.getDB(configuration.getMongoConfiguration().getDatabaseName());
+
+        DB locateDb = locateDb(configuration.getMongoConfiguration(), mongoClient);
 
         /**
          * Resources
          */
-        environment.addResource(new AddressResource(configureAddressDao(db)));
+        environment.addResource(new AddressResource(configureAddressDao(locateDb)));
 
         /**
          * Healthchecks
          */
         environment.addHealthCheck(new MongoHealthCheck(mongoClient));
-
 
         /**
          * Exception mapper
@@ -64,7 +69,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
-        environment.addProvider(new BearerTokenAuthProvider(new BearerTokenAuthenticator(configureAuthorizationTokenDao(db))));
+        environment.addProvider(new BearerTokenAuthProvider(new BearerTokenAuthenticator(configureAuthorizationTokenDao(locateDb))));
 
         /**
          * Better exception mappings
@@ -75,7 +80,18 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
     private MongoClient configureMongoClient(Environment environment, MongoConfiguration config) throws UnknownHostException {
         MongoClient mongoClient = new MongoClient(config.getHosts(), config.getPort());
         environment.manage(new ManagedMongo(mongoClient));
+
         return mongoClient;
+    }
+
+    private DB locateDb(MongoConfiguration config, MongoClient mongoClient) {
+        DB db = mongoClient.getDB(config.getDatabaseName());
+
+        if (config.hasAuth()) {
+            db.authenticate(config.getUsername(), config.getPassword().toCharArray());
+        }
+
+        return db;
     }
 
     private AuthorizationTokenDao configureAuthorizationTokenDao(DB db) {

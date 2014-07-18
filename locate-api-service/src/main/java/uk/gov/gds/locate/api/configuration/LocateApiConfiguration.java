@@ -18,4 +18,11 @@ public class LocateApiConfiguration extends Configuration {
     public MongoConfiguration getMongoConfiguration() {
         return mongoConfiguration;
     }
+
+    @Override
+    public String toString() {
+        return "LocateApiConfiguration{" +
+                "mongoConfiguration=" + mongoConfiguration +
+                '}';
+    }
 }
