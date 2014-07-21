@@ -35,7 +35,7 @@ public class AddressResourceTest extends ResourceTest {
     private String inValidPostcode = "bogus";
     private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token", 1);
 
-    private Address address = new Address("gssCode", "postcode", new Presentation(), new Details());
+    private Address address = new Address("gssCode", "postcode", new Presentation(), new Details(), new Location());
 
     private AddressDao dao = mock(AddressDao.class);
 

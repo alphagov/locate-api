@@ -10,6 +10,13 @@ public class Location {
     @JsonProperty("long")
     private Double longitude;
 
+    public Location() {
+    }
+
+    public Location(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     public Double getLatitude() {
         return latitude;
@@ -17,5 +24,13 @@ public class Location {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
 }

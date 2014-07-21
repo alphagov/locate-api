@@ -1,0 +1,1 @@
+mvn -DskipTests=true package &&  java -jar -Ddw.mongoConfiguration.hosts=ds053539.mongolab.com -Ddw.mongoConfiguration.port=53539 -Ddw.mongoConfiguration.databaseName=heroku_app27546732 locate-api-service/target/locate-api-service-0.0.1-SNAPSHOT.jar server locateApiConfiguration.yml

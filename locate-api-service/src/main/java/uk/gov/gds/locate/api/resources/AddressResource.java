@@ -16,12 +16,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-import static uk.gov.gds.locate.api.services.AddressTransformationService.addressToSimpleAddress;
+import static uk.gov.gds.locate.api.services.AddressTransformationService.*;
 
 @Path("/locate/addresses")
 @Produces(MediaType.APPLICATION_JSON)
 public class AddressResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddressResource.class);
 
     private final AddressDao addressDao;
 
@@ -31,8 +30,7 @@ public class AddressResource {
 
     @GET
     @Timed
-    public List<Address> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
-       // return addressToSimpleAddress(addressDao.findAllForPostcode(postcode));
-       return addressDao.findAllForPostcode(postcode);
+    public List<SimpleAddress> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
+        return addressToSimpleAddress(filterForElectoral(addressDao.findAllForPostcode(postcode)));
     }
 }

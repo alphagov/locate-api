@@ -75,7 +75,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         removeDefaultExceptionMappers(environment);
 
         /**
-         * JodaDate serialisation
+         * Date serialisation
          */
         environment.getObjectMapperFactory().setDateFormat(internalDateFormatter);
     }

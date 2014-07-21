@@ -9,13 +9,20 @@ import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.SimpleAddress;
 
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Collections;
 import java.util.List;
 
 public class AddressTransformationService {
 
-    public static List<Address> filterResidential(List<Address> addresses) {
+    public static List<Address> filterForElectoral(List<Address> addresses) {
+        return ImmutableList.copyOf(Collections2.filter(addresses, new Predicate<Address>() {
+            @Override
+            public boolean apply(@Nullable Address input) {
+                return input.getDetails().getIsElectoral() && input.getDetails().getIsPostalAddress();
+            }
+        }));
+    }
+
+    public static List<Address> filterForResidential(List<Address> addresses) {
         return ImmutableList.copyOf(Collections2.filter(addresses, new Predicate<Address>() {
             @Override
             public boolean apply(@Nullable Address input) {
@@ -24,7 +31,7 @@ public class AddressTransformationService {
         }));
     }
 
-    public static List<Address> filterCommercial(List<Address> addresses) {
+    public static List<Address> filterForCommercial(List<Address> addresses) {
         return ImmutableList.copyOf(Collections2.filter(addresses, new Predicate<Address>() {
             @Override
             public boolean apply(@Nullable Address input) {
@@ -33,7 +40,7 @@ public class AddressTransformationService {
         }));
     }
 
-    public static List<Address> filterResidentialAndCommercial(List<Address> addresses) {
+    public static List<Address> filterForResidentialAndCommercial(List<Address> addresses) {
         return ImmutableList.copyOf(Collections2.filter(addresses, new Predicate<Address>() {
             @Override
             public boolean apply(@Nullable Address input) {
