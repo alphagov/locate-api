@@ -13,6 +13,7 @@ import org.junit.Test;
 import uk.gov.gds.locate.api.LocateExceptionMapper;
 import uk.gov.gds.locate.api.authentication.BearerToken;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
+import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.*;
 
@@ -26,12 +27,13 @@ import static org.mockito.Mockito.*;
 
 public class AddressResourceTest extends ResourceTest {
 
+    private LocateApiConfiguration configuration = mock(LocateApiConfiguration.class);
     private String validToken = String.format("Bearer %s", "valid");
     private String inValidToken = String.format("Bearer %s", "bogus");
 
     private String validPostcode = "a11aa";
     private String inValidPostcode = "bogus";
-    private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token");
+    private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token", 1);
 
     private Address address = new Address("gssCode", "postcode", new Presentation());
 
@@ -95,7 +97,7 @@ public class AddressResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         addResource(new AddressResource(dao));
-        addProvider(new BearerTokenAuthProvider(new TestAuthenticator()));
+        addProvider(new BearerTokenAuthProvider(configuration, new TestAuthenticator()));
         addProvider(new LocateExceptionMapper());
     }
 

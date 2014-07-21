@@ -2,6 +2,8 @@
 ### Locate API configuration
 ###
 
+maxRequestsPerDay: 1000
+
 http:
 
     rootPath: "/*"

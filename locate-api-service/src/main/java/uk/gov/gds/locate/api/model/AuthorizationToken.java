@@ -14,26 +14,38 @@ public class AuthorizationToken {
     @JsonProperty("token")
     private String token;
 
+    @JsonProperty("requests")
+    private Integer requests;
 
     public AuthorizationToken() {
     }
 
-    public AuthorizationToken(String id, String identifier, String token) {
+    public AuthorizationToken(String id, String identifier, String token, Integer requests) {
         this.id = id;
         this.identifier = identifier;
         this.token = token;
+        this.requests = requests;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     public String getToken() {
         return token;
     }
 
+    public Integer getRequests() {
+        return requests;
+    }
+
     @Override
     public String toString() {
         return "AuthorizationToken{" +
                 "id='" + id + '\'' +
-                ", token='" + getObfuscatedToken(token) + '\'' +
                 ", identifier='" + identifier + '\'' +
+                ", token='" + token + '\'' +
+                ", requests=" + requests +
                 '}';
     }
 }

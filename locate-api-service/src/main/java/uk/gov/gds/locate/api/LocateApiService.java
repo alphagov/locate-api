@@ -7,8 +7,6 @@ import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import org.mongojack.JacksonDBCollection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
@@ -28,8 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 public class LocateApiService extends Service<LocateApiConfiguration> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocateApiService.class);
 
     public static void main(String[] args) throws Exception {
         new LocateApiService().run(args);
@@ -69,7 +65,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
-        environment.addProvider(new BearerTokenAuthProvider(new BearerTokenAuthenticator(configureAuthorizationTokenDao(credentialsDb))));
+        environment.addProvider(new BearerTokenAuthProvider(configuration, new BearerTokenAuthenticator(configureAuthorizationTokenDao(credentialsDb))));
 
         /**
          * Better exception mappings

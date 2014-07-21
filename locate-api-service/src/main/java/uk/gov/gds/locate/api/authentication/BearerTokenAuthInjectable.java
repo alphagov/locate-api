@@ -8,6 +8,7 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 
 import javax.ws.rs.WebApplicationException;
@@ -22,9 +23,11 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
     private static final String PREFIX = "Bearer";
     private static final String CHALLENGE_FORMAT = PREFIX + " token";
 
+    private final LocateApiConfiguration configuration;
     private final Authenticator<BearerToken, AuthorizationToken> authenticator;
 
-    public BearerTokenAuthInjectable(Authenticator<BearerToken, AuthorizationToken> authenticator) {
+    public BearerTokenAuthInjectable(LocateApiConfiguration configuration, Authenticator<BearerToken, AuthorizationToken> authenticator) {
+        this.configuration = configuration;
         this.authenticator = authenticator;
     }
 
@@ -32,6 +35,16 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
         return new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED)
                 .header(HttpHeaders.WWW_AUTHENTICATE, CHALLENGE_FORMAT)
                 .entity(String.format("{\"error\":\"%s\"}", message))
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build());
+    }
+
+    private WebApplicationException constructRateLimitedException(Integer used) {
+        return new WebApplicationException(Response.status(Response.Status.fromStatusCode(429))
+                .header(HttpHeaders.WWW_AUTHENTICATE, CHALLENGE_FORMAT)
+                .header("X-Locate-Limit-Max", configuration.getMaxRequestsPerDay())
+                .header("X-Locate-Limit-Used", used)
+                .entity(String.format("{\"error\":\"Exceed usage limits\"}"))
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build());
     }
@@ -74,8 +87,10 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
         final BearerToken bearerToken = new BearerToken(token);
         final Optional<AuthorizationToken> result = authenticator.authenticate(bearerToken);
 
-        if (result.isPresent()) {
+        if (result.isPresent() && result.get().getRequests() <= configuration.getMaxRequestsPerDay()) {
             return result.get();
+        } else if (result.isPresent() && result.get().getRequests() > configuration.getMaxRequestsPerDay()) {
+            throw constructRateLimitedException(result.get().getRequests());
         }
         throw constructWebApplicationException("Invalid credentials");
     }

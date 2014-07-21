@@ -15,14 +15,24 @@ public class LocateApiConfiguration extends Configuration {
     @JsonProperty
     private MongoConfiguration mongoConfiguration = new MongoConfiguration();
 
+    @Valid
+    @NotNull
+    @JsonProperty
+    private Integer maxRequestsPerDay;
+
     public MongoConfiguration getMongoConfiguration() {
         return mongoConfiguration;
+    }
+
+    public Integer getMaxRequestsPerDay() {
+        return maxRequestsPerDay;
     }
 
     @Override
     public String toString() {
         return "LocateApiConfiguration{" +
                 "mongoConfiguration=" + mongoConfiguration +
+                ", maxRequestsPerDay=" + maxRequestsPerDay +
                 '}';
     }
 }
