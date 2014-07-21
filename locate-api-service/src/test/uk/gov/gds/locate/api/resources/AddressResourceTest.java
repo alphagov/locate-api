@@ -35,7 +35,7 @@ public class AddressResourceTest extends ResourceTest {
     private String inValidPostcode = "bogus";
     private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token", 1);
 
-    private Address address = new Address("gssCode", "postcode", new Presentation());
+    private Address address = new Address("gssCode", "postcode", new Presentation(), new Details());
 
     private AddressDao dao = mock(AddressDao.class);
 
@@ -43,6 +43,7 @@ public class AddressResourceTest extends ResourceTest {
     public void setUp() {
         when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(address));
         when(dao.findAllForPostcode(inValidPostcode)).thenReturn(Collections.<Address>emptyList());
+        when(configuration.getMaxRequestsPerDay()).thenReturn(1);
     }
 
     @Test

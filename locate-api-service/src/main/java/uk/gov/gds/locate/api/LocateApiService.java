@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.gds.locate.api.formatters.DateTimeFormatters.internalDateFormatter;
+
 public class LocateApiService extends Service<LocateApiConfiguration> {
 
     public static void main(String[] args) throws Exception {
@@ -71,6 +73,11 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          * Better exception mappings
          */
         removeDefaultExceptionMappers(environment);
+
+        /**
+         * JodaDate serialisation
+         */
+        environment.getObjectMapperFactory().setDateFormat(internalDateFormatter);
     }
 
     private MongoClient configureMongoClient(Environment environment, MongoConfiguration config) throws UnknownHostException {

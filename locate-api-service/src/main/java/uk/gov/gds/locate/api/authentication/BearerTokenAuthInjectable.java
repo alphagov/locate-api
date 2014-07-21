@@ -40,7 +40,7 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
     }
 
     private WebApplicationException constructRateLimitedException(Integer used) {
-        return new WebApplicationException(Response.status(Response.Status.fromStatusCode(429))
+        return new WebApplicationException(Response.status(429)
                 .header(HttpHeaders.WWW_AUTHENTICATE, CHALLENGE_FORMAT)
                 .header("X-Locate-Limit-Max", configuration.getMaxRequestsPerDay())
                 .header("X-Locate-Limit-Used", used)

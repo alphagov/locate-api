@@ -3,25 +3,18 @@ package uk.gov.gds.locate.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.joda.time.DateTime;
-import uk.gov.gds.locate.api.json.JsonDateDeserializer;
-import uk.gov.gds.locate.api.json.JsonDateSerializer;
+
+import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Details {
 
-    @JsonSerialize(using = JsonDateSerializer.class)
-    @JsonDeserialize(using = JsonDateDeserializer.class)
     @JsonProperty("blpuCreatedAt")
-    private DateTime blpuCreatedAt;
+    private Date blpuCreatedAt;
 
-    @JsonSerialize(using = JsonDateSerializer.class)
-    @JsonDeserialize(using = JsonDateDeserializer.class)
     @JsonProperty("blpuUpdatedAt")
-    private DateTime blpuUpdatedAt;
+    private Date blpuUpdatedAt;
 
     @JsonProperty("classification")
     private String classification;
@@ -59,8 +52,8 @@ public class Details {
     public Details() {
     }
 
-    public Details(DateTime blpuCreatedAt,
-                   DateTime blpuUpdatedAt,
+    public Details(Date blpuCreatedAt,
+                   Date blpuUpdatedAt,
                    String classification,
                    String state,
                    Boolean isPostalAddress,
@@ -88,11 +81,11 @@ public class Details {
         this.secondaryClassification = secondaryClassification;
     }
 
-    public DateTime getBlpuCreatedAt() {
+    public Date getBlpuCreatedAt() {
         return blpuCreatedAt;
     }
 
-    public DateTime getBlpuUpdatedAt() {
+    public Date getBlpuUpdatedAt() {
         return blpuUpdatedAt;
     }
 

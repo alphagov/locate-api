@@ -31,8 +31,8 @@ public class AddressResource {
 
     @GET
     @Timed
-    public List<SimpleAddress> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
-        LOGGER.info("request " + postcode);
-        return addressToSimpleAddress(addressDao.findAllForPostcode(postcode));
+    public List<Address> fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
+       // return addressToSimpleAddress(addressDao.findAllForPostcode(postcode));
+       return addressDao.findAllForPostcode(postcode);
     }
 }
