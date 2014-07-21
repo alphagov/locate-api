@@ -76,7 +76,7 @@ mongoConfiguration:
 
     locateDatabase: locate
 
-    credentialsDatabase: locate-credentials
+    credentialsDatabase: locate
 
     username:
 
