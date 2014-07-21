@@ -4,6 +4,7 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.Service;
+import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import org.mongojack.JacksonDBCollection;
@@ -35,7 +36,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     @Override
     public void initialize(Bootstrap<LocateApiConfiguration> bootstrap) {
-
+        bootstrap.addBundle(new AssetsBundle("/assets", "/locate"));
     }
 
     @Override

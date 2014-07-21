@@ -2,10 +2,7 @@ package uk.gov.gds.locate.api.resources;
 
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.gds.locate.api.dao.AddressDao;
-import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.SimpleAddress;
 
@@ -16,7 +13,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-import static uk.gov.gds.locate.api.services.AddressTransformationService.*;
+import static uk.gov.gds.locate.api.services.AddressTransformationService.addressToSimpleAddress;
+import static uk.gov.gds.locate.api.services.AddressTransformationService.filterForElectoral;
 
 @Path("/locate/addresses")
 @Produces(MediaType.APPLICATION_JSON)
