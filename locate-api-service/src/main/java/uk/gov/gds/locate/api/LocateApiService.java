@@ -7,6 +7,7 @@ import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.views.ViewBundle;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
@@ -21,6 +22,7 @@ import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.Usage;
 import uk.gov.gds.locate.api.resources.AddressResource;
+import uk.gov.gds.locate.api.resources.CreateUserResource;
 
 import javax.ws.rs.ext.ExceptionMapper;
 import java.net.UnknownHostException;
@@ -38,7 +40,10 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     @Override
     public void initialize(Bootstrap<LocateApiConfiguration> bootstrap) {
-        bootstrap.addBundle(new AssetsBundle("/assets", "/"));
+        bootstrap.addBundle(new ViewBundle());
+        bootstrap.addBundle(new AssetsBundle("/assets/stylesheets", "/stylesheets"));
+        bootstrap.addBundle(new AssetsBundle("/assets/javascripts", "/javascripts"));
+        bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
     }
 
     @Override
@@ -56,6 +61,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          * Resources
          */
         environment.addResource(new AddressResource(configureAddressDao(locateDb)));
+        environment.addResource(new CreateUserResource());
 
         /**
          * Healthchecks

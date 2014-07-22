@@ -19,7 +19,7 @@
         <git.branch>GIT_BRANCH</git.branch>
         <build.time>BUILD_TIME</build.time>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -37,11 +37,6 @@
             <artifactId>dropwizard-testing</artifactId>
             <version>0.6.2</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.yammer.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>0.6.2</version>
         </dependency>
         <dependency>
             <groupId>com.yammer.dropwizard</groupId>
@@ -149,7 +144,7 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
-            </plugin>           
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
