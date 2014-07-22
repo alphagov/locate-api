@@ -1,6 +1,5 @@
 package uk.gov.gds.locate.api.resources;
 
-
 import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.views.CompleteView;
 import uk.gov.gds.locate.api.views.CreateUserView;
@@ -27,9 +26,8 @@ public class CreateUserResource {
             @FormParam("organisation") String organisation,
             @FormParam("query_type") String queryType,
             @FormParam("data_type") String dataType
-
     ) throws Exception {
-        return new CompleteView();
+        return new CompleteView("TOKEN THING");
     }
 
 }
