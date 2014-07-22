@@ -7,11 +7,12 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
+import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.model.Usage;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.when;
 public class BearerTokenAuthInjectableTest {
 
     private BearerTokenAuthenticator mockAuthenticator = mock(BearerTokenAuthenticator.class);
+    private UsageDao usageDao = mock(UsageDao.class);
     private HttpContext context = mock(HttpContext.class);
     private HttpRequestContext webContext = mock(HttpRequestContext.class);
     private BearerTokenAuthInjectable auth;
@@ -33,7 +35,7 @@ public class BearerTokenAuthInjectableTest {
     public void setUp() {
         when(context.getRequest()).thenReturn(webContext);
         when(configuration.getMaxRequestsPerDay()).thenReturn(1000);
-        auth = new BearerTokenAuthInjectable(configuration, mockAuthenticator);
+        auth = new BearerTokenAuthInjectable(configuration, mockAuthenticator, usageDao);
     }
 
     @Test
@@ -87,6 +89,8 @@ public class BearerTokenAuthInjectableTest {
 
     @Test
     public void shouldDisallowIfExceedUsage() throws AuthenticationException {
+        Usage exceededRate = new Usage("id","identifier", 3);
+        when(usageDao.findRateMeterById("identifier")).thenReturn(Optional.of(exceededRate));
         when(configuration.getMaxRequestsPerDay()).thenReturn(2);
         when(mockAuthenticator.authenticate(any(BearerToken.class))).thenReturn(Optional.of(new AuthorizationToken("1", "identifier", "token", 2)));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
@@ -96,12 +100,14 @@ public class BearerTokenAuthInjectableTest {
             auth.getValue(context);
         } catch (WebApplicationException ex) {
             assertThat(ex.getResponse().getStatus(), is(429));
-            assertThat(ex.getResponse().getEntity().toString(), is("{\"error\":\"Exceeded usage\"}"));
+            assertThat(ex.getResponse().getEntity().toString(), is("{\"error\":\"Exceed usage limits\"}"));
         }
     }
 
     @Test
     public void shouldAllowIfExactlyOnUsage() throws AuthenticationException {
+        Usage bangOnRate = new Usage("id","identifier", 2);
+        when(usageDao.findRateMeterById("identifier")).thenReturn(Optional.of(bangOnRate));
         when(configuration.getMaxRequestsPerDay()).thenReturn(2);
         when(mockAuthenticator.authenticate(any(BearerToken.class))).thenReturn(Optional.of(new AuthorizationToken("1", "identifier", "token", 2)));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
@@ -113,6 +119,8 @@ public class BearerTokenAuthInjectableTest {
 
     @Test
     public void shouldAllowAValidHttpRequest() throws AuthenticationException {
+        Usage notExceededRate = new Usage("id","identifier", 0);
+        when(usageDao.findRateMeterById("identifier")).thenReturn(Optional.of(notExceededRate));
         when(mockAuthenticator.authenticate(any(BearerToken.class))).thenReturn(Optional.of(new AuthorizationToken("1", "identifier", "token", 1)));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
         when(webContext.getPath()).thenReturn("path/to/resource");

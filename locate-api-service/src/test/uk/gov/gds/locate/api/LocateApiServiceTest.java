@@ -3,6 +3,7 @@ package uk.gov.gds.locate.api;
 import com.mongodb.MongoException;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.json.ObjectMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
@@ -23,6 +24,7 @@ public class LocateApiServiceTest {
     private LocateApiConfiguration configuration = mock(LocateApiConfiguration.class);
     private MongoConfiguration mongoConfiguration = mock(MongoConfiguration.class);
     private ResourceConfig resourceConfig = mock(ResourceConfig.class);
+    private ObjectMapperFactory objectMapperFactory = mock(ObjectMapperFactory.class);
 
     @Before
     public void setUp() {
@@ -34,6 +36,7 @@ public class LocateApiServiceTest {
         when(configuration.getMongoConfiguration()).thenReturn(mongoConfiguration);
 
         when(environment.getJerseyResourceConfig()).thenReturn(resourceConfig);
+        when(environment.getObjectMapperFactory()).thenReturn(objectMapperFactory);
         when(resourceConfig.getSingletons()).thenReturn(Collections.EMPTY_SET);
     }
 

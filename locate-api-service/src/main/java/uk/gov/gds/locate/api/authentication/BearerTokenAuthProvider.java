@@ -8,16 +8,20 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.auth.Authenticator;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
+import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 
 public class BearerTokenAuthProvider implements InjectableProvider<Auth, Parameter> {
 
     private final LocateApiConfiguration configuration;
+    private final UsageDao usageDao;
     private final Authenticator<BearerToken, AuthorizationToken> authenticator;
 
-    public BearerTokenAuthProvider(LocateApiConfiguration configuration, Authenticator<BearerToken, AuthorizationToken> authenticator) {
+
+    public BearerTokenAuthProvider(LocateApiConfiguration configuration, UsageDao usageDao, Authenticator<BearerToken, AuthorizationToken> bearerTokenAuthenticator) {
         this.configuration = configuration;
-        this.authenticator = authenticator;
+        this.usageDao = usageDao;
+        this.authenticator = bearerTokenAuthenticator;
     }
 
     @Override
@@ -27,6 +31,6 @@ public class BearerTokenAuthProvider implements InjectableProvider<Auth, Paramet
 
     @Override
     public Injectable<?> getInjectable(ComponentContext ic, Auth a, Parameter c) {
-        return new BearerTokenAuthInjectable(configuration, authenticator);
+        return new BearerTokenAuthInjectable(configuration, authenticator, usageDao);
     }
 }

@@ -2,9 +2,10 @@ package uk.gov.gds.locate.api.services;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import uk.gov.gds.locate.api.helpers.DetailsBuilder;
+import uk.gov.gds.locate.api.helpers.PresentationBuilder;
 import uk.gov.gds.locate.api.model.*;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -140,7 +141,7 @@ public class AddressTransformationServiceTest {
         Address four = new Address("gssCode-2", "uprn-2", new PresentationBuilder("postal-2").build(), isPostal2, location(1.1, 2.2));
         Address notCommercialOrResidential = new Address("gssCode-2", "uprn-2", new PresentationBuilder("postal-2").build(), isNotCommercialOrResidential, location(1.1, 2.2));
 
-        List<Address> transformed = AddressTransformationService.filterForResidentialAndCommercial(ImmutableList.of(one,two, three, four, notCommercialOrResidential));
+        List<Address> transformed = AddressTransformationService.filterForResidentialAndCommercial(ImmutableList.of(one, two, three, four, notCommercialOrResidential));
 
         assertThat(transformed.size()).isEqualTo(2);
         assertThat(transformed.get(0).getPresentation().getProperty()).isEqualTo("property-postal-1");
@@ -149,90 +150,6 @@ public class AddressTransformationServiceTest {
 
     private Location location(Double latitude, Double longitude) {
         return new Location(latitude, longitude);
-    }
-
-    private class DetailsBuilder {
-        private Date blpuCreatedAt;
-        private Date blpuUpdatedAt;
-        private String classification;
-        private String state;
-        private Boolean isPostalAddress;
-        private Boolean isCommercial;
-        private Boolean isResidential;
-        private Boolean isHigherEducational;
-        private Boolean isElectoral;
-        private String usrn;
-        private String file;
-        private String primaryClassification;
-        private String secondaryClassification;
-
-        public DetailsBuilder(String suffix) {
-            isPostalAddress = false;
-            isCommercial = false;
-            isResidential = false;
-            isHigherEducational = false;
-            isElectoral = false;
-            blpuCreatedAt = new Date();
-            blpuUpdatedAt = new Date();
-            classification = "classification-" + suffix;
-            state = "state-" + suffix;
-            usrn = "usrn-" + suffix;
-            file = "file-" + suffix;
-            primaryClassification = "primaryClassification-" + suffix;
-            secondaryClassification = "secondaryClassification-" + suffix;
-        }
-
-        public DetailsBuilder postal(Boolean isPostalAddress) {
-            this.isPostalAddress = isPostalAddress;
-            return this;
-        }
-
-        public DetailsBuilder residential(Boolean isResidential) {
-            this.isResidential = isResidential;
-            return this;
-        }
-
-        public DetailsBuilder commercial(Boolean isCommercial) {
-            this.isCommercial = isCommercial;
-            return this;
-        }
-
-        public DetailsBuilder electoral(Boolean isElectoral) {
-            this.isElectoral = isElectoral;
-            return this;
-        }
-
-        public DetailsBuilder higherEducational(Boolean isHigherEducational) {
-            this.isHigherEducational = isHigherEducational;
-            return this;
-        }
-
-        public Details build() {
-            return new Details(blpuCreatedAt, blpuUpdatedAt, classification, state, isPostalAddress, isCommercial, isResidential, isHigherEducational, isElectoral, usrn, file, primaryClassification, secondaryClassification);
-        }
-    }
-
-    private class PresentationBuilder {
-
-        private String property;
-        private String street;
-        private String locality;
-        private String town;
-        private String area;
-        private String postcode;
-
-        public PresentationBuilder(String suffix) {
-            this.property = "property-" + suffix;
-            this.street = "street-" + suffix;
-            this.locality = "locality-" + suffix;
-            this.town = "town-" + suffix;
-            this.area = "area-" + suffix;
-            this.postcode = "postcode-" + suffix;
-        }
-
-        public Presentation build() {
-            return new Presentation(property, street, locality, town, area, postcode);
-        }
     }
 
 

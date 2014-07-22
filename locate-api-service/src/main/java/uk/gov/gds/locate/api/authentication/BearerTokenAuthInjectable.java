@@ -9,7 +9,9 @@ import com.yammer.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
+import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.model.Usage;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -25,10 +27,13 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
 
     private final LocateApiConfiguration configuration;
     private final Authenticator<BearerToken, AuthorizationToken> authenticator;
+    private final UsageDao usageDao;
 
-    public BearerTokenAuthInjectable(LocateApiConfiguration configuration, Authenticator<BearerToken, AuthorizationToken> authenticator) {
+
+    public BearerTokenAuthInjectable(LocateApiConfiguration configuration, Authenticator<BearerToken, AuthorizationToken> authenticator, UsageDao usageDao) {
         this.configuration = configuration;
         this.authenticator = authenticator;
+        this.usageDao = usageDao;
     }
 
     private WebApplicationException constructWebApplicationException(String message) {
@@ -87,11 +92,20 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
         final BearerToken bearerToken = new BearerToken(token);
         final Optional<AuthorizationToken> result = authenticator.authenticate(bearerToken);
 
-        if (result.isPresent() && result.get().getRequests() <= configuration.getMaxRequestsPerDay()) {
+        if (result.isPresent()) {
+            Integer requests = requestsMade(result.get());
+            if (requests > configuration.getMaxRequestsPerDay()) {
+                throw constructRateLimitedException(requests);
+            }
+            // update count
             return result.get();
-        } else if (result.isPresent() && result.get().getRequests() > configuration.getMaxRequestsPerDay()) {
-            throw constructRateLimitedException(result.get().getRequests());
         }
         throw constructWebApplicationException("Invalid credentials");
+    }
+
+    private Integer requestsMade(AuthorizationToken token) {
+        Optional<Usage> rateMeter = usageDao.findRateMeterById(token.getIdentifier());
+        if (rateMeter.isPresent()) return rateMeter.get().getCount();
+        else return 0;  // create a rateMeter document
     }
 }

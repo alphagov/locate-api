@@ -15,6 +15,9 @@ import uk.gov.gds.locate.api.authentication.BearerToken;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
+import uk.gov.gds.locate.api.dao.UsageDao;
+import uk.gov.gds.locate.api.helpers.DetailsBuilder;
+import uk.gov.gds.locate.api.helpers.PresentationBuilder;
 import uk.gov.gds.locate.api.model.*;
 
 import java.util.Collections;
@@ -27,20 +30,23 @@ import static org.mockito.Mockito.*;
 
 public class AddressResourceTest extends ResourceTest {
 
+    private AddressDao dao = mock(AddressDao.class);
+    private UsageDao usageDao = mock(UsageDao.class);
     private LocateApiConfiguration configuration = mock(LocateApiConfiguration.class);
+
     private String validToken = String.format("Bearer %s", "valid");
     private String inValidToken = String.format("Bearer %s", "bogus");
-
     private String validPostcode = "a11aa";
     private String inValidPostcode = "bogus";
+
     private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token", 1);
-
-    private Address address = new Address("gssCode", "postcode", new Presentation(), new Details(), new Location());
-
-    private AddressDao dao = mock(AddressDao.class);
+    private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
+    private Address address = new Address("gssCode", "postcode", new PresentationBuilder("test").build(), validAddress, new Location());
+    private Usage usage = new Usage("id", "identifier", 1);
 
     @Before
     public void setUp() {
+        when(usageDao.findRateMeterById("identifier")).thenReturn(Optional.of(usage));
         when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(address));
         when(dao.findAllForPostcode(inValidPostcode)).thenReturn(Collections.<Address>emptyList());
         when(configuration.getMaxRequestsPerDay()).thenReturn(1);
@@ -98,7 +104,7 @@ public class AddressResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         addResource(new AddressResource(dao));
-        addProvider(new BearerTokenAuthProvider(configuration, new TestAuthenticator()));
+        addProvider(new BearerTokenAuthProvider(configuration, usageDao, new TestAuthenticator()));
         addProvider(new LocateExceptionMapper());
     }
 

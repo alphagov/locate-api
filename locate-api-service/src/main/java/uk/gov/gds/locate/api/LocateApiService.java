@@ -14,10 +14,12 @@ import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
+import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.healthchecks.MongoHealthCheck;
 import uk.gov.gds.locate.api.managed.ManagedMongo;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.model.Usage;
 import uk.gov.gds.locate.api.resources.AddressResource;
 
 import javax.ws.rs.ext.ExceptionMapper;
@@ -36,7 +38,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     @Override
     public void initialize(Bootstrap<LocateApiConfiguration> bootstrap) {
-        bootstrap.addBundle(new AssetsBundle("/assets", "/locate"));
+        bootstrap.addBundle(new AssetsBundle("/assets", "/"));
     }
 
     @Override
@@ -68,7 +70,9 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
-        environment.addProvider(new BearerTokenAuthProvider(configuration, new BearerTokenAuthenticator(configureAuthorizationTokenDao(credentialsDb))));
+        final AuthorizationTokenDao authorizationTokenDao = configureAuthorizationTokenDao(credentialsDb);
+        final UsageDao usageDao = configureRateMeterDao(credentialsDb);
+        environment.addProvider(new BearerTokenAuthProvider(configuration, usageDao, new BearerTokenAuthenticator(authorizationTokenDao)));
 
         /**
          * Better exception mappings
@@ -105,6 +109,10 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     private AddressDao configureAddressDao(DB db) {
         return new AddressDao(JacksonDBCollection.wrap(db.getCollection("addresses"), Address.class, String.class));
+    }
+
+    private UsageDao configureRateMeterDao(DB db) {
+        return new UsageDao(JacksonDBCollection.wrap(db.getCollection("usage"), Usage.class, String.class));
     }
 
     private void removeDefaultExceptionMappers(Environment environment) {
