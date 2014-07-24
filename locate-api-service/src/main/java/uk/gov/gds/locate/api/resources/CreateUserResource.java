@@ -5,6 +5,7 @@ import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
 import uk.gov.gds.locate.api.exceptions.LocateWebException;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.CreateUserRequest;
+import uk.gov.gds.locate.api.model.DataType;
 import uk.gov.gds.locate.api.model.QueryType;
 import uk.gov.gds.locate.api.services.BearerTokenGenerationService;
 import uk.gov.gds.locate.api.views.CompleteView;
@@ -50,7 +51,8 @@ public class CreateUserResource {
                 org.bson.types.ObjectId.get().toString(),
                 request.getEmail(),
                 bearerTokenGenerationService.newToken(),
-                QueryType.parse(request.getQueryType())
+                QueryType.parse(request.getQueryType()),
+                DataType.parse(request.getDataType())
         );
 
         authorizationTokenDao.create(token);
@@ -77,7 +79,8 @@ public class CreateUserResource {
                     org.bson.types.ObjectId.get().toString(),
                     request.getEmail(),
                     bearerTokenGenerationService.newToken(),
-                    QueryType.parse(request.getQueryType())
+                    QueryType.parse(request.getQueryType()),
+                    DataType.parse(request.getDataType())
             );
             authorizationTokenDao.create(token);
             return new CompleteView(token, errors);

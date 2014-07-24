@@ -9,7 +9,7 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Address {
+public class Address implements BaseAddress {
 
     @JsonProperty("gssCode")
     private String gssCode;
