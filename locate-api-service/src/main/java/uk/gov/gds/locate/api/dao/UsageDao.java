@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.mongodb.BasicDBObject;
 import com.yammer.metrics.annotation.Timed;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.mongojack.DBUpdate;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.gds.locate.api.model.Usage;
@@ -26,7 +27,7 @@ public class UsageDao {
 
     @Timed
     public Boolean create(String identifier) {
-        return collection.insert(new Usage(org.bson.types.ObjectId.get().toString(), identifier, 1, new DateTime().toDateMidnight().toLocalDate().toDate())).getN() == 1;
+        return collection.insert(new Usage(org.bson.types.ObjectId.get().toString(), identifier, 1, new DateTime().withZone(DateTimeZone.UTC).toDateMidnight().toDate())).getN() == 1;
     }
 
     @Timed
