@@ -16,6 +16,7 @@ import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.helpers.DetailsBuilder;
+import uk.gov.gds.locate.api.helpers.OrderingBuilder;
 import uk.gov.gds.locate.api.helpers.PresentationBuilder;
 import uk.gov.gds.locate.api.model.*;
 
@@ -43,7 +44,8 @@ public class AddressResourceTest extends ResourceTest {
     private AuthorizationToken allFieldsAuthorizationToken = new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.ALL);
     private AuthorizationToken presentationFieldsAuthorizationToken = new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.PRESENTATION);
     private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
-    private Address address = new Address("gssCode", "uprn", new PresentationBuilder("test").build(), validAddress, new Location());
+    private Ordering ordering = new OrderingBuilder("test").build();
+    private Address address = new Address("gssCode", "uprn", "postcode", "country", new Date(), new PresentationBuilder("test").build(), validAddress, new Location(), ordering);
     private Usage usage = new Usage("id", "identifier", 1, new Date());
 
     @Before
@@ -153,7 +155,7 @@ public class AddressResourceTest extends ResourceTest {
     public void shouldReturnAListOfAddressesWithoutNullFieldsAsValidJSONForASuccessfulSearch() {
         Presentation presentation = new Presentation();
 
-        Address addressWithMissingFields = new Address("gssCode", "uprn", presentation, validAddress, new Location());
+        Address addressWithMissingFields = new Address("gssCode", "uprn", null, "country", new Date(), presentation, validAddress, new Location(), new Ordering());
         when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(addressWithMissingFields));
 
         String result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(String.class);
