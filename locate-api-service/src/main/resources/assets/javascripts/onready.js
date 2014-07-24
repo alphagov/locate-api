@@ -59,7 +59,7 @@
          e.preventDefault();
 
         function printSuccess(obj) {
-            var html = '<div class="warning">';
+            var html = '<hr/><div class="warning">';
             html += "This is your credential for the locate API"
             html += '<p>Note this down now as there is no way to access it again</p>';
             html += "<p><h3>" + obj.token + "</h3></p>";
@@ -68,7 +68,7 @@
         }
 
         function printError(errors) {
-            var errorHtml = '<div class="warning">There have been some e';
+            var errorHtml = '<div class="warning">There have been some errors in creating your credentials';
 
             for(var i in errors) {
                 errorHtml += "<p>" + errors[i] + "</p>";

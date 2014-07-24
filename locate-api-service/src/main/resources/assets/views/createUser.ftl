@@ -6,13 +6,10 @@
         <h2>What is the Locate API?</h2>
 
         <p>Locate is a free API service that does postcode lookups against the latest available data from the Ordinance
-            Survey. It uses AddressBase data and it is free to use for any public sector organisation in the UK.</p>
+            Survey. It uses <a href="http://www.ordnancesurvey.co.uk/business-and-government/products/addressbase-premium.html">AddressBase data</a> and it is free to use for any public sector organisation in the UK.</p>
 
         <p>Read more about Locate and how to access the service in the <a href="https://github.com/alphagov/locate-api">technical
             documentation on GitHub.</a></p>
-
-        <p>You’ll need your National Insurance number (if you have one). If you’re living abroad, you may also need your
-            passport.</p>
 
         <hr/>
 

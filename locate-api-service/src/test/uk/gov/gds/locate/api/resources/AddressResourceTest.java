@@ -41,8 +41,8 @@ public class AddressResourceTest extends ResourceTest {
     private String validPostcode = "a11aa";
     private String inValidPostcode = "bogus";
 
-    private AuthorizationToken allFieldsAuthorizationToken = new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.ALL);
-    private AuthorizationToken presentationFieldsAuthorizationToken = new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.PRESENTATION);
+    private AuthorizationToken allFieldsAuthorizationToken = new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL);
+    private AuthorizationToken presentationFieldsAuthorizationToken = new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.PRESENTATION);
     private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
     private Ordering ordering = new OrderingBuilder("test").build();
     private Address address = new Address("gssCode", "uprn", "postcode", "country", new Date(), new PresentationBuilder("test").build(), validAddress, new Location(), ordering);

@@ -51,7 +51,9 @@ public class CreateUserResource {
 
         AuthorizationToken token = new AuthorizationToken(
                 org.bson.types.ObjectId.get().toString(),
+                request.getName(),
                 request.getEmail(),
+                request.getOrganisation(),
                 bearerTokenGenerationService.newToken(),
                 QueryType.parse(request.getQueryType()),
                 DataType.parse(request.getDataType())
@@ -79,7 +81,9 @@ public class CreateUserResource {
         if (errors.size() == 0) {
             AuthorizationToken token = new AuthorizationToken(
                     org.bson.types.ObjectId.get().toString(),
+                    request.getName(),
                     request.getEmail(),
+                    request.getOrganisation(),
                     bearerTokenGenerationService.newToken(),
                     QueryType.parse(request.getQueryType()),
                     DataType.parse(request.getDataType())

@@ -15,8 +15,14 @@ public class AuthorizationToken {
     @ObjectId
     private String id;
 
+    @JsonProperty("name")
+    private String name;
+
     @JsonProperty("identifier")
     private String identifier;
+
+    @JsonProperty("organisation")
+    private String organisation;
 
     @JsonProperty("token")
     private String token;
@@ -32,16 +38,30 @@ public class AuthorizationToken {
     public AuthorizationToken() {
     }
 
-    public AuthorizationToken(String id, String identifier, String token, QueryType queryType, DataType dataType) {
+    public AuthorizationToken(String id, String name, String identifier, String organisation, String token, QueryType queryType, DataType dataType) {
         this.id = id;
+        this.name = name;
         this.identifier = identifier;
+        this.organisation = organisation;
         this.token = token;
         this.queryType = queryType;
         this.dataType = dataType;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public String getIdentifier() {
         return identifier;
+    }
+
+    public String getOrganisation() {
+        return organisation;
     }
 
     public String getToken() {
@@ -49,7 +69,7 @@ public class AuthorizationToken {
     }
 
     public QueryType getQueryType() {
-        return this.queryType;
+        return queryType;
     }
 
     public DataType getDataType() {
@@ -60,9 +80,12 @@ public class AuthorizationToken {
     public String toString() {
         return "AuthorizationToken{" +
                 "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", identifier='" + identifier + '\'' +
+                ", organisation='" + organisation + '\'' +
                 ", token='" + token + '\'' +
                 ", queryType=" + queryType +
+                ", dataType=" + dataType +
                 '}';
     }
 }
