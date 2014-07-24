@@ -20,6 +20,7 @@ import uk.gov.gds.locate.api.helpers.PresentationBuilder;
 import uk.gov.gds.locate.api.model.*;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +44,7 @@ public class AddressResourceTest extends ResourceTest {
     private AuthorizationToken presentationFieldsAuthorizationToken = new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.PRESENTATION);
     private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
     private Address address = new Address("gssCode", "uprn", new PresentationBuilder("test").build(), validAddress, new Location());
-    private Usage usage = new Usage("id", "identifier", 1);
+    private Usage usage = new Usage("id", "identifier", 1, new Date());
 
     @Before
     public void setUp() {

@@ -11,6 +11,7 @@ import uk.gov.gds.locate.api.model.Usage;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class UsageDao {
 
@@ -27,7 +28,8 @@ public class UsageDao {
 
     @Timed
     public Boolean create(String identifier) {
-        return collection.insert(new Usage(org.bson.types.ObjectId.get().toString(), identifier, 1, new DateTime().withZone(DateTimeZone.UTC).toDateMidnight().toDate())).getN() == 1;
+        Date expiry = DateTime.now().withZone(DateTimeZone.UTC).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59).withMillisOfSecond(999).toDate();
+        return collection.insert(new Usage(org.bson.types.ObjectId.get().toString(), identifier, 1, expiry)).getN() == 1;
     }
 
     @Timed
