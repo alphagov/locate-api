@@ -39,14 +39,14 @@ public class AddressResourceTest extends ResourceTest {
     private String validPostcode = "a11aa";
     private String inValidPostcode = "bogus";
 
-    private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token", 1);
+    private AuthorizationToken authorizationToken = new AuthorizationToken("1", "identifier", "token", QueryType.ALL);
     private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
-    private Address address = new Address("gssCode", "postcode", new PresentationBuilder("test").build(), validAddress, new Location());
+    private Address address = new Address("gssCode", "uprn", new PresentationBuilder("test").build(), validAddress, new Location());
     private Usage usage = new Usage("id", "identifier", 1);
 
     @Before
     public void setUp() {
-        when(usageDao.findRateMeterById("identifier")).thenReturn(Optional.of(usage));
+        when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(usage));
         when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(address));
         when(dao.findAllForPostcode(inValidPostcode)).thenReturn(Collections.<Address>emptyList());
         when(configuration.getMaxRequestsPerDay()).thenReturn(1);
@@ -94,10 +94,51 @@ public class AddressResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnAListOfAddressesForAnUnsuccessfulSearch() {
+    public void shouldReturnAListOfAddressesAsValidJSONForASuccessfulSearch() {
+        String result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", validToken).get(String.class);
+        verify(dao, times(1)).findAllForPostcode(validPostcode);
+        assertThat(result).contains("\"gssCode\":\"gssCode\"");
+        assertThat(result).contains("\"uprn\":\"uprn\"");
+        assertThat(result).contains("\"property\":\"property-test\"");
+        assertThat(result).contains("\"street\":\"street-test\"");
+        assertThat(result).contains("\"locality\":\"locality-test\"");
+        assertThat(result).contains("\"town\":\"town-test\"");
+        assertThat(result).contains("\"area\":\"area-test\"");
+        assertThat(result).contains("\"postcode\":\"postcode-test\"");
+    }
+
+    @Test
+    public void shouldReturnAListOfAddressesWithoutNullFieldsAsValidJSONForASuccessfulSearch() {
+        Presentation presentation = new Presentation();
+
+        Address addressWithMissingFields = new Address("gssCode", "uprn", presentation, validAddress, new Location());
+        when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(addressWithMissingFields));
+
+        String result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", validToken).get(String.class);
+        verify(dao, times(1)).findAllForPostcode(validPostcode);
+        assertThat(result).contains("\"gssCode\":\"gssCode\"");
+        assertThat(result).contains("\"uprn\":\"uprn\"");
+        assertThat(result).doesNotContain("\"property\"");
+        assertThat(result).doesNotContain("\"street\"");
+        assertThat(result).doesNotContain("\"locality\"");
+        assertThat(result).doesNotContain("\"town\"");
+        assertThat(result).doesNotContain("\"area\"");
+        assertThat(result).doesNotContain("\"postcode\"");
+    }
+
+
+    @Test
+    public void shouldReturnAnEmptyListOfAddressesForAnUnsuccessfulSearch() {
         List<SimpleAddress> result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", validToken).get(new GenericType<List<SimpleAddress>>() {
         });
         assertThat(result.size()).isEqualTo(0);
+        verify(dao, times(1)).findAllForPostcode(inValidPostcode);
+    }
+
+    @Test
+    public void shouldReturnAnEmptyListOfAddressesAsValidJSONForAnUnsuccessfulSearch() {
+        String result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", validToken).get(String.class);
+        assertThat(result).contains("[]");
         verify(dao, times(1)).findAllForPostcode(inValidPostcode);
     }
 
@@ -108,11 +149,11 @@ public class AddressResourceTest extends ResourceTest {
         addProvider(new LocateExceptionMapper());
     }
 
-    protected class TestAuthenticator implements Authenticator<BearerToken, AuthorizationToken> {
+    protected class TestAuthenticator implements Authenticator<String, AuthorizationToken> {
 
-        public Optional<AuthorizationToken> authenticate(BearerToken bearerToken) throws AuthenticationException {
+        public Optional<AuthorizationToken> authenticate(String bearerToken) throws AuthenticationException {
 
-            if ("valid".equalsIgnoreCase(bearerToken.getBearerToken())) {
+            if ("valid".equalsIgnoreCase(bearerToken)) {
                 return Optional.of(authorizationToken);
             } else {
                 return Optional.absent();

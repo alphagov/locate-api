@@ -23,6 +23,7 @@ import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.Usage;
 import uk.gov.gds.locate.api.resources.AddressResource;
 import uk.gov.gds.locate.api.resources.CreateUserResource;
+import uk.gov.gds.locate.api.services.BearerTokenGenerationService;
 
 import javax.ws.rs.ext.ExceptionMapper;
 import java.net.UnknownHostException;
@@ -58,10 +59,17 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         DB credentialsDb = setUpDb(configuration.getMongoConfiguration().getCredentialsDatabase(), configuration.getMongoConfiguration(), mongoClient);
 
         /**
+         * Dao layer
+         */
+        final AuthorizationTokenDao authorizationTokenDao = configureAuthorizationTokenDao(credentialsDb);
+        final UsageDao usageDao = configureRateMeterDao(credentialsDb);
+        final AddressDao addressDao = configureAddressDao(locateDb);
+
+        /**
          * Resources
          */
-        environment.addResource(new AddressResource(configureAddressDao(locateDb)));
-        environment.addResource(new CreateUserResource());
+        environment.addResource(new AddressResource(addressDao));
+        environment.addResource(new CreateUserResource(authorizationTokenDao, new BearerTokenGenerationService()));
 
         /**
          * Healthchecks
@@ -76,8 +84,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
-        final AuthorizationTokenDao authorizationTokenDao = configureAuthorizationTokenDao(credentialsDb);
-        final UsageDao usageDao = configureRateMeterDao(credentialsDb);
+
         environment.addProvider(new BearerTokenAuthProvider(configuration, usageDao, new BearerTokenAuthenticator(authorizationTokenDao)));
 
         /**
@@ -89,6 +96,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          * Date serialisation
          */
         environment.getObjectMapperFactory().setDateFormat(internalDateFormatter);
+
     }
 
     private MongoClient configureMongoClient(Environment environment, MongoConfiguration config) throws UnknownHostException {

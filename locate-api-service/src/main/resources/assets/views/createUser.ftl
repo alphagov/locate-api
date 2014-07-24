@@ -42,31 +42,30 @@
 
         <h3>What type of addresses do you want to receive from the API?</h3>
         <fieldset>
-        <fieldset class="validate " data-validation-name="query" data-validation-type="fieldset" data-validation-rules="atLeastOneNonEmpty" data-validation-children="residential commercial residential-commercial all">
 
             <label for="residential_data" class="selectable">
-                <input id="residential_data" name="query_type" value="residential" class="radio validate"
+                <input id="residential_data" name="queryType" value="residential" class="radio validate"
                        data-validation-name="residential" data-validation-type="field" data-validation-rules="nonEmpty"
                        type="radio" checked>
                 Residential
             </label>
 
             <label for="commercial_data" class="selectable">
-                <input id="commercial_data" name="query_type" value="commercial" class="radio validate"
+                <input id="commercial_data" name="queryType" value="commercial" class="radio validate"
                        data-validation-name="commercial" data-validation-type="field" data-validation-rules="nonEmpty"
                        type="radio">
                 Commercial
             </label>
 
             <label for="residential-commercial_data" class="selectable">
-                <input id="residential-commercial_data" name="query_type" value="residential-commercial"
+                <input id="residential-commercial_data" name="queryType" value="residentialAndCommercial"
                        class="radio validate" data-validation-name="residential-commercial" data-validation-type="field"
                        data-validation-rules="nonEmpty" type="radio">
                 Residential and commercial
             </label>
 
             <label for="all_data" class="selectable">
-                <input id="all_data" name="query_type" value="all" class="radio validate" data-validation-name="all"
+                <input id="all_data" name="queryType" value="all" class="radio validate" data-validation-name="all"
                        data-validation-type="field" data-validation-rules="nonEmpty" type="radio">
                 All
             </label>
@@ -74,13 +73,13 @@
         <h3>Do you want the full data or only the presentation block?</h3>
         <fieldset>
             <label for="full" class="selectable">
-                <input id="full" name="data_type" value="full" class="radio" data-validation-name="full"
+                <input id="full" name="dataType" value="all" class="radio" data-validation-name="full"
                        data-validation-type="field" data-validation-rules="nonEmpty" type="radio" checked>
                 Full
             </label>
 
             <label for="presentation" class="selectable">
-                <input id="presentation" name="data_type" value="presentation" class="radio"
+                <input id="presentation" name="dataType" value="presentation" class="radio"
                        data-validation-name="presentation" data-validation-type="field" data-validation-rules="nonEmpty"
                        type="radio">
                 Presentation
@@ -95,8 +94,11 @@
 
         <div class="warning">Locate API is in 'alpha' stage so there are not guaranteed uptime or service levels</div>
 
-            <input id="continue" class="button next" value="Generate token" type="submit">
+        <input id="submit" class="button next" value="Generate token" type="submit">
+
         </form>
+
+        <div id="results"></div>
 
     </article>
 <#include "footer.ftl">

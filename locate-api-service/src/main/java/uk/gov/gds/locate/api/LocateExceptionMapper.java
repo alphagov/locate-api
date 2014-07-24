@@ -2,6 +2,7 @@ package uk.gov.gds.locate.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.gds.locate.api.exceptions.LocateWebException;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -21,9 +22,9 @@ public class LocateExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Th
     @Override
     public Response toResponse(Throwable exception) {
 
-        if (exception instanceof WebApplicationException) {
+        if (exception instanceof LocateWebException) {
             LOGGER.error("WebApplicationException", exception);
-            return ((WebApplicationException) exception).getResponse();
+            return ((LocateWebException) exception).getResponse();
         }
 
         LOGGER.error("Server Error", exception);

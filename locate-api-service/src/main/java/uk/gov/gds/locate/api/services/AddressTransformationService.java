@@ -49,6 +49,11 @@ public class AddressTransformationService {
         }));
     }
 
+    public static List<Address> filter(List<Address> addresses, Predicate<Address> predicate) {
+        return ImmutableList.copyOf(Collections2.filter(addresses, predicate));
+    }
+
+
     public static List<SimpleAddress> addressToSimpleAddress(List<Address> addresses) {
         return Lists.transform(addresses, new Function<Address, SimpleAddress>() {
             @Nullable

@@ -15,10 +15,10 @@ public class BearerTokenAuthProvider implements InjectableProvider<Auth, Paramet
 
     private final LocateApiConfiguration configuration;
     private final UsageDao usageDao;
-    private final Authenticator<BearerToken, AuthorizationToken> authenticator;
+    private final Authenticator<String, AuthorizationToken> authenticator;
 
 
-    public BearerTokenAuthProvider(LocateApiConfiguration configuration, UsageDao usageDao, Authenticator<BearerToken, AuthorizationToken> bearerTokenAuthenticator) {
+    public BearerTokenAuthProvider(LocateApiConfiguration configuration, UsageDao usageDao, Authenticator<String, AuthorizationToken> bearerTokenAuthenticator) {
         this.configuration = configuration;
         this.usageDao = usageDao;
         this.authenticator = bearerTokenAuthenticator;

@@ -1,11 +1,18 @@
 package uk.gov.gds.locate.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CreateUserRequest {
 
+    @JsonProperty("name")
     private String name;
+    @JsonProperty("email")
     private String email;
+    @JsonProperty("organisation")
     private String organisation;
+    @JsonProperty("queryType")
     private String queryType;
+    @JsonProperty("dataType")
     private String dataType;
 
     public CreateUserRequest() {
@@ -23,39 +30,24 @@ public class CreateUserRequest {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getOrganisation() {
         return organisation;
     }
 
-    public void setOrganisation(String organisation) {
-        this.organisation = organisation;
-    }
 
     public String getQueryType() {
         return queryType;
     }
 
-    public void setQueryType(String queryType) {
-        this.queryType = queryType;
-    }
 
     public String getDataType() {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
 }

@@ -26,11 +26,11 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
     private static final String CHALLENGE_FORMAT = PREFIX + " token";
 
     private final LocateApiConfiguration configuration;
-    private final Authenticator<BearerToken, AuthorizationToken> authenticator;
+    private final Authenticator<String, AuthorizationToken> authenticator;
     private final UsageDao usageDao;
 
 
-    public BearerTokenAuthInjectable(LocateApiConfiguration configuration, Authenticator<BearerToken, AuthorizationToken> authenticator, UsageDao usageDao) {
+    public BearerTokenAuthInjectable(LocateApiConfiguration configuration, Authenticator<String, AuthorizationToken> authenticator, UsageDao usageDao) {
         this.configuration = configuration;
         this.authenticator = authenticator;
         this.usageDao = usageDao;
@@ -89,8 +89,7 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
     }
 
     private AuthorizationToken authenticateClientByBearerToken(String token, HttpContext context) throws AuthenticationException {
-        final BearerToken bearerToken = new BearerToken(token);
-        final Optional<AuthorizationToken> result = authenticator.authenticate(bearerToken);
+        final Optional<AuthorizationToken> result = authenticator.authenticate(token);
 
         if (result.isPresent()) {
             Integer requests = requestsMade(result.get());
@@ -104,8 +103,11 @@ public class BearerTokenAuthInjectable extends AbstractHttpContextInjectable {
     }
 
     private Integer requestsMade(AuthorizationToken token) {
-        Optional<Usage> rateMeter = usageDao.findRateMeterById(token.getIdentifier());
+        Optional<Usage> rateMeter = usageDao.findUsageByIdentifier(token.getIdentifier());
         if (rateMeter.isPresent()) return rateMeter.get().getCount();
-        else return 0;  // create a rateMeter document
+        else {
+            usageDao.create(token.getIdentifier());
+            return 1;
+        }
     }
 }

@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 import static uk.gov.gds.locate.api.services.AddressTransformationService.addressToSimpleAddress;
+import static uk.gov.gds.locate.api.services.AddressTransformationService.filter;
 import static uk.gov.gds.locate.api.services.AddressTransformationService.filterForElectoral;
 
 @Path("/locate/addresses")

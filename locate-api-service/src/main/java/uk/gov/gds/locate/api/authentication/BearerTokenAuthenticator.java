@@ -6,7 +6,7 @@ import com.yammer.dropwizard.auth.Authenticator;
 import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 
-public class BearerTokenAuthenticator implements Authenticator<BearerToken, AuthorizationToken> {
+public class BearerTokenAuthenticator implements Authenticator<String, AuthorizationToken> {
 
     private final AuthorizationTokenDao authorizationTokenDao;
 
@@ -14,7 +14,7 @@ public class BearerTokenAuthenticator implements Authenticator<BearerToken, Auth
         this.authorizationTokenDao = authorizationTokenDao;
     }
 
-    public Optional<AuthorizationToken> authenticate(BearerToken bearerToken) throws AuthenticationException {
-        return Optional.fromNullable(authorizationTokenDao.fetchCredentialsByBearerToken(bearerToken.getBearerToken()));
+    public Optional<AuthorizationToken> authenticate(String bearerToken) throws AuthenticationException {
+        return Optional.fromNullable(authorizationTokenDao.fetchCredentialsByBearerToken(bearerToken));
     }
 }

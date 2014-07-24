@@ -52,7 +52,6 @@
 <script src="/javascripts/jquery-1.10.1.min.js"></script>
 <script src="/javascripts/core.js"></script>
 <script src="/javascripts/typeahead.js"></script>
-<script src="/javascripts/validation.js"></script>
 <script src="/javascripts/forms.js"></script>
 <script src="/javascripts/onready.js"></script>
 

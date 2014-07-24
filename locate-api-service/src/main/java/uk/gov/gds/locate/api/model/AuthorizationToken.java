@@ -1,11 +1,16 @@
 package uk.gov.gds.locate.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import static uk.gov.gds.locate.api.authentication.Obfuscated.getObfuscatedToken;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.mongojack.ObjectId;
+import uk.gov.gds.locate.api.json.QueryTypeJsonDeserializer;
+import uk.gov.gds.locate.api.json.QueryTypeJsonSerializer;
 
 public class AuthorizationToken {
 
     @JsonProperty("_id")
+    @ObjectId
     private String id;
 
     @JsonProperty("identifier")
@@ -14,17 +19,18 @@ public class AuthorizationToken {
     @JsonProperty("token")
     private String token;
 
-    @JsonProperty("requests")
-    private Integer requests;
+    @JsonSerialize(using = QueryTypeJsonSerializer.class, include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonDeserialize(using = QueryTypeJsonDeserializer.class)
+    private QueryType queryType;
 
     public AuthorizationToken() {
     }
 
-    public AuthorizationToken(String id, String identifier, String token, Integer requests) {
+    public AuthorizationToken(String id, String identifier, String token, QueryType queryType) {
         this.id = id;
         this.identifier = identifier;
         this.token = token;
-        this.requests = requests;
+        this.queryType = queryType;
     }
 
     public String getIdentifier() {
@@ -35,8 +41,8 @@ public class AuthorizationToken {
         return token;
     }
 
-    public Integer getRequests() {
-        return requests;
+    public QueryType getQueryType() {
+        return this.queryType;
     }
 
     @Override
@@ -45,7 +51,7 @@ public class AuthorizationToken {
                 "id='" + id + '\'' +
                 ", identifier='" + identifier + '\'' +
                 ", token='" + token + '\'' +
-                ", requests=" + requests +
+                ", queryType=" + queryType +
                 '}';
     }
 }

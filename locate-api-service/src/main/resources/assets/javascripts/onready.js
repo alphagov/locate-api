@@ -44,27 +44,62 @@
 
   // Custom events
 
-  // Bind all autocomplete events
-  $.each(['initialized', 'opened', 'closed', 'movedto', 'updated'], function (idx, evt) {
-    $(document).bind('typeahead:' + evt, function () {
-      var autocompleteEvent = GOVUK.registerToVote.autocompletes.createEvent(evt);
+  var dataType = $('input:radio[name=dataType]:checked').val();
+  var queryType = $('input:radio[name=queryType]:checked').val();
 
-      autocompleteEvent.trigger.apply(GOVUK.registerToVote.autocompletes, arguments);
-    });
+  $("input:radio[name=dataType]").click(function() {
+    dataType = $(this).val();
   });
-  $(document).bind('contentUpdate', function (e, data) {
-    var context = data.context;
 
-    $('.country-autocomplete', context).each(function (idx, elm) {
-      GOVUK.registerToVote.autocompletes.add($(elm));
-    });
+  $("input:radio[name=queryType]").click(function() {
+    queryType = $(this).val();
   });
-  $(document).bind('contentRemoval', function (e, data) {
-    var context = data.context;
 
-    $('.country-autocomplete', context).each(function (idx, elm) {
-      GOVUK.registerToVote.autocompletes.remove($(elm));
-    });
-  });
-  GOVUK.registerToVote.validation.init();
+    $('#submit').on("click", function(e) {
+         e.preventDefault();
+
+        function printSuccess(obj) {
+            var html = '<div class="warning">';
+            html += "This is your credential for the locate API"
+            html += '<p>Note this down now as there is no way to access it again</p>';
+            html += "<p><h3>" + obj.token + "</h3></p>";
+            html += '</div>';
+            return html;
+        }
+
+        function printError(errors) {
+            var errorHtml = '<div class="warning">There have been some e';
+
+            for(var i in errors) {
+                errorHtml += "<p>" + errors[i] + "</p>";
+            }
+            return errorHtml + "</div>";
+        }
+
+         var request = {
+            "name": $('#name').val(),
+            "email": $('#email').val(),
+            "organisation": $('#organisation').val(),
+            "dataType": dataType,
+            "queryType": queryType
+        };
+
+        $.ajax({
+             url : "/locate/create-user",
+             type: "POST",
+             dataType : 'json',
+             contentType: "application/json",
+             data : JSON.stringify(request),
+             timeout : 10000
+           }).
+           done(function (data, status, xhrObj) {
+                var obj = JSON.parse(xhrObj.responseText);
+                $("#results").html(printSuccess(obj));
+           }).
+           fail(function (xhrObj, status, errorStr) {
+                var obj = JSON.parse(xhrObj.responseText);
+                $("#results").html(printError(obj));
+             });
+     });
+
 }.call(this));
