@@ -24,6 +24,7 @@ import uk.gov.gds.locate.api.model.Usage;
 import uk.gov.gds.locate.api.resources.AddressResource;
 import uk.gov.gds.locate.api.resources.CreateUserResource;
 import uk.gov.gds.locate.api.services.BearerTokenGenerationService;
+import uk.gov.gds.locate.api.tasks.MongoIndexTask;
 
 import javax.ws.rs.ext.ExceptionMapper;
 import java.net.UnknownHostException;
@@ -96,6 +97,11 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          * Date serialisation
          */
         environment.getObjectMapperFactory().setDateFormat(internalDateFormatter);
+
+        /**
+         * Tasks
+         */
+        environment.addTask(new MongoIndexTask(authorizationTokenDao, usageDao));
 
     }
 
