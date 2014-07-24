@@ -16,6 +16,8 @@ import uk.gov.gds.locate.api.model.Usage;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 
+import java.util.Date;
+
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -90,7 +92,7 @@ public class BearerTokenAuthInjectableTest {
 
     @Test
     public void shouldDisallowIfExceedUsage() throws AuthenticationException {
-        Usage exceededRate = new Usage("id","identifier", 3);
+        Usage exceededRate = new Usage("id","identifier", 3, new Date());
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(exceededRate));
         when(configuration.getMaxRequestsPerDay()).thenReturn(2);
         when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.ALL)));
@@ -111,7 +113,7 @@ public class BearerTokenAuthInjectableTest {
 
     @Test
     public void shouldAllowIfExactlyOnMaxUsageAllowed() throws AuthenticationException {
-        Usage bangOnRate = new Usage("id","identifier", 2);
+        Usage bangOnRate = new Usage("id","identifier", 2, new Date());
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(bangOnRate));
         when(configuration.getMaxRequestsPerDay()).thenReturn(2);
         when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.ALL)));
@@ -124,7 +126,7 @@ public class BearerTokenAuthInjectableTest {
 
     @Test
     public void shouldAllowAValidHttpRequestWithUsageUnderTheMaximum() throws AuthenticationException {
-        Usage notExceededRate = new Usage("id","identifier", 0);
+        Usage notExceededRate = new Usage("id","identifier", 0, new Date());
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(notExceededRate));
         when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "identifier", "token", QueryType.ALL, DataType.ALL)));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");

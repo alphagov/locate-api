@@ -2,6 +2,7 @@ package uk.gov.gds.locate.api.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoException;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Test;
@@ -49,6 +50,22 @@ public class CreateUserResourceTest extends ResourceTest {
             verify(dao, times(0)).create(any(AuthorizationToken.class));
             assertThat(e.getResponse().getStatus()).isEqualTo(422);
             assertThat(e.getResponse().getEntity(String.class)).isEqualTo("[\"Name must be present and shorter than 255 letters\"]");
+        }
+    }
+
+    @Test
+    public void shouldRejectARequestThatHasADuplicateIdentifier() throws JsonProcessingException {
+        when(dao.create(any(AuthorizationToken.class))).thenThrow(new MongoException("authorizationToken.$identifier_index  dup key"));
+        CreateUserRequest request = new CreateUserRequest("name", "real@email.gov.uk", "org", "all", "all");
+
+        String jsonRequest = mapper.writeValueAsString(request);
+        try {
+            client().resource("/locate/create-user").header("Content-type", "application/json").post(String.class, jsonRequest);
+            fail("Should have thrown exception");
+        } catch (UniformInterfaceException e) {
+            verify(dao, times(1)).create(any(AuthorizationToken.class));
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("[\"These details have been previously used\"]");
         }
     }
 

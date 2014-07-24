@@ -1,5 +1,7 @@
 package uk.gov.gds.locate.api.resources;
 
+import com.google.common.collect.ImmutableList;
+import com.mongodb.MongoException;
 import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
 import uk.gov.gds.locate.api.exceptions.LocateWebException;
@@ -55,7 +57,7 @@ public class CreateUserResource {
                 DataType.parse(request.getDataType())
         );
 
-        authorizationTokenDao.create(token);
+        createUser(token);
         return token;
     }
 
@@ -82,10 +84,21 @@ public class CreateUserResource {
                     QueryType.parse(request.getQueryType()),
                     DataType.parse(request.getDataType())
             );
-            authorizationTokenDao.create(token);
+            createUser(token);
             return new CompleteView(token, errors);
         }
         return new CompleteView(new AuthorizationToken(), errors);
+    }
+
+    private void createUser(AuthorizationToken token) throws LocateWebException {
+        try {
+            authorizationTokenDao.create(token);
+        } catch (MongoException exception) {
+            if (exception.getMessage().contains("authorizationToken.$identifier_index  dup key"))
+                throw new LocateWebException(422, ImmutableList.of("These details have been previously used"));
+            else
+                throw exception;
+        }
     }
 
 }
