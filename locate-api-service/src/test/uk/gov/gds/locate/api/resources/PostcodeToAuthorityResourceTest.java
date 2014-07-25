@@ -17,7 +17,7 @@ import uk.gov.gds.locate.api.model.*;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -30,7 +30,7 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
 
     private LocateApiConfiguration configuration = mock(LocateApiConfiguration.class);
     private UsageDao usageDao = mock(UsageDao.class);
-    private PostcodeToAuthority postcodeToAuthority = new PostcodeToAuthority("id", "gssCode", "country", "name", "postcode");
+    private PostcodeToAuthority postcodeToAuthority = new PostcodeToAuthority("id", "gssCode", "country", "postcode", "name");
     private PostcodeToAuthorityDao dao = mock(PostcodeToAuthorityDao.class);
 
     @Before
@@ -46,8 +46,8 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
             client().resource("/locate/authority?postcode=a11aa").get(Object.class);
             fail("Should have rejected an API call with no auth headers");
         } catch (UniformInterfaceException e) {
-            assertThat(e.getResponse().getStatus(), Matchers.is(401));
-            assertThat(e.getResponse().getEntity(String.class), Matchers.is("{\"error\":\"Invalid credentials\"}"));
+            assertThat(e.getResponse().getStatus()).isEqualTo(401);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"Invalid credentials\"}");
         }
     }
 
@@ -57,8 +57,8 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
             client().resource("/locate/authority?postcode=a11aa").header("Authorization", inValidToken).get(Object.class);
             fail("Should have rejected an API call with no auth headers");
         } catch (UniformInterfaceException e) {
-            assertThat(e.getResponse().getStatus(), Matchers.is(401));
-            assertThat(e.getResponse().getEntity(String.class), Matchers.is("{\"error\":\"Invalid credentials\"}"));
+            assertThat(e.getResponse().getStatus()).isEqualTo(401);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"Invalid credentials\"}");
         }
     }
 
@@ -72,8 +72,8 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
             client().resource("/locate/authority?postcode=a11aa").header("Authorization", validToken).get(Object.class);
             fail("Should have rejected an API call with no exceeded usage");
         } catch (UniformInterfaceException e) {
-            assertThat(e.getResponse().getStatus(), Matchers.is(429));
-            assertThat(e.getResponse().getEntity(String.class), Matchers.is("{\"error\":\"Exceed usage limits\"}"));
+            assertThat(e.getResponse().getStatus()).isEqualTo(429);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"Exceed usage limits\"}");
         }
     }
 
@@ -82,9 +82,26 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
         try {
             client().resource("/locate/authority?postcode=a11aa").header("Authorization", validToken).get(Object.class);
             verify(dao, times(1)).findForPostcode("a11aa");
-        } catch (UniformInterfaceException e) {
+        } catch (Exception e) {
             fail("Should not have rejected an API call with valid auth headers");
         }
+    }
+
+    @Test
+    public void shouldReturnAPostcodeToAuthorityObject() {
+        PostcodeToAuthority result = client().resource("/locate/authority?postcode=a11aa").header("Authorization", validToken).get(PostcodeToAuthority.class);
+        verify(dao, times(1)).findForPostcode("a11aa");
+        assertThat(result).isEqualsToByComparingFields(postcodeToAuthority);
+    }
+
+    @Test
+    public void shouldReturnAPostcodeToAuthorityAsValidJson() {
+        String result = client().resource("/locate/authority?postcode=a11aa").header("Authorization", validToken).get(String.class);
+        verify(dao, times(1)).findForPostcode("a11aa");
+        assertThat(result).contains("\"postcode\":\"postcode\"");
+        assertThat(result).contains("\"country\":\"country\"");
+        assertThat(result).contains("\"gssCode\":\"gssCode\"");
+        assertThat(result).contains("\"_id\":\"id\"");
     }
 
     @Override
