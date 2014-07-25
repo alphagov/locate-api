@@ -15,14 +15,17 @@ import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
+import uk.gov.gds.locate.api.dao.PostcodeToAuthorityDao;
 import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.healthchecks.MongoHealthCheck;
 import uk.gov.gds.locate.api.managed.ManagedMongo;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.model.PostcodeToAuthority;
 import uk.gov.gds.locate.api.model.Usage;
 import uk.gov.gds.locate.api.resources.AddressResource;
 import uk.gov.gds.locate.api.resources.CreateUserResource;
+import uk.gov.gds.locate.api.resources.PostcodeToAuthorityResource;
 import uk.gov.gds.locate.api.services.BearerTokenGenerationService;
 import uk.gov.gds.locate.api.tasks.MongoIndexTask;
 
@@ -65,11 +68,13 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         final AuthorizationTokenDao authorizationTokenDao = configureAuthorizationTokenDao(credentialsDb);
         final UsageDao usageDao = configureRateMeterDao(credentialsDb);
         final AddressDao addressDao = configureAddressDao(locateDb);
+        final PostcodeToAuthorityDao postcodeToAuthorityDao = configurePostcodeToAuthorityDao(locateDb);
 
         /**
          * Resources
          */
         environment.addResource(new AddressResource(addressDao));
+        environment.addResource(new PostcodeToAuthorityResource(postcodeToAuthorityDao));
         environment.addResource(new CreateUserResource(authorizationTokenDao, new BearerTokenGenerationService()));
 
         /**
@@ -129,6 +134,10 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     private AddressDao configureAddressDao(DB db) {
         return new AddressDao(JacksonDBCollection.wrap(db.getCollection("addresses"), Address.class, String.class));
+    }
+
+    private PostcodeToAuthorityDao configurePostcodeToAuthorityDao(DB db) {
+        return new PostcodeToAuthorityDao(JacksonDBCollection.wrap(db.getCollection("postcodeToAuthority"), PostcodeToAuthority.class, String.class));
     }
 
     private UsageDao configureRateMeterDao(DB db) {

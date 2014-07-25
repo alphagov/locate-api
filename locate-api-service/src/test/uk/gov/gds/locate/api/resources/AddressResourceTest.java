@@ -79,11 +79,26 @@ public class AddressResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldRejectAddressesFetchWithExceededUsage() {
+        Usage exceededUsage = new Usage("id", "identifier", 100, new Date());
+        when(configuration.getMaxRequestsPerDay()).thenReturn(1);
+        when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(exceededUsage));
+
+        try {
+            client().resource("/locate/addresses").header("Authorization", allDataFieldsToken).get(Object.class);
+            fail("Should have rejected an API call with no exceeded usage");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus(), Matchers.is(429));
+            assertThat(e.getResponse().getEntity(String.class), Matchers.is("{\"error\":\"Exceed usage limits\"}"));
+        }
+    }
+
+    @Test
     public void shouldAllowAddressesFetchWithValidAuthCredentials() {
         try {
             client().resource("/locate/addresses").header("Authorization", allDataFieldsToken).get(Object.class);
         } catch (UniformInterfaceException e) {
-            fail("Should have rejected an API call with no auth headers");
+            fail("Should not have rejected an API call with valid auth headers");
         }
     }
 
