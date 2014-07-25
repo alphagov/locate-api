@@ -62,16 +62,16 @@
             var html = '<hr/><div class="warning">';
             html += "This is your credential for the locate API"
             html += '<p>Note this down now as there is no way to access it again</p>';
-            html += "<p><h3>" + obj.token + "</h3></p>";
+            html += "<p><em>" + obj.token + "</em></p>";
             html += '</div>';
             return html;
         }
 
         function printError(errors) {
-            var errorHtml = '<div class="warning">There have been some errors in creating your credentials';
+            var errorHtml = '<hr/><div class="validation-message visible">There have been some errors in creating your credentials';
 
             for(var i in errors) {
-                errorHtml += "<p>" + errors[i] + "</p>";
+                errorHtml += "<p>" + errors[i] + ".</p>";
             }
             return errorHtml + "</div>";
         }

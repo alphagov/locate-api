@@ -5,7 +5,6 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
 import com.yammer.dropwizard.testing.ResourceTest;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.gds.locate.api.LocateExceptionMapper;

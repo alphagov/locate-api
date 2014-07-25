@@ -2423,3 +2423,21 @@ main.article header h1 {
     padding:2px 5px 0;
     background-color:#d53880;
  }
+
+hr {
+    margin-top: 28px;
+}
+
+.article form {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+em {
+    font-style: normal;
+    font-weight: bold;
+}
+
+#results .warning {
+    margin-top: 28px;
+}

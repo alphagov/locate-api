@@ -102,11 +102,9 @@
 </div>
 <!--end global-header-bar-->
 
-<main id="content" class="">
-    <header class="page-header group">
-        <div>
+<main id="content" class="article">
+    <header>
             <h1>
                 Locate API <span>Alpha</span>
             </h1>
-        </div>
     </header>
