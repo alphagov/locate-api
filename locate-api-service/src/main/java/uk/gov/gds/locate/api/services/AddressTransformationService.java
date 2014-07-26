@@ -53,13 +53,22 @@ public class AddressTransformationService {
         return ImmutableList.copyOf(Collections2.filter(addresses, predicate));
     }
 
-
     public static List<SimpleAddress> addressToSimpleAddress(List<Address> addresses) {
         return Lists.transform(addresses, new Function<Address, SimpleAddress>() {
             @Nullable
             @Override
             public SimpleAddress apply(@Nullable Address input) {
                 return new SimpleAddress(input);
+            }
+        });
+    }
+
+    public static List<SimpleAddress> decryptAddressToSimpleAddress(List<Address> addresses, final String key) {
+        return Lists.transform(addresses, new Function<Address, SimpleAddress>() {
+            @Nullable
+            @Override
+            public SimpleAddress apply(@Nullable Address input) {
+                return new SimpleAddress(input).decrypt(key, input.getIv());
             }
         });
     }

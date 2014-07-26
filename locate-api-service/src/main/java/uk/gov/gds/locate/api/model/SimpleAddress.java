@@ -2,6 +2,8 @@ package uk.gov.gds.locate.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
+import uk.gov.gds.locate.api.encryption.AesEncryptionService;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SimpleAddress implements BaseAddress {
@@ -31,6 +33,17 @@ public class SimpleAddress implements BaseAddress {
     private String postcode;
 
     public SimpleAddress() {
+    }
+
+    public SimpleAddress(String gssCode, String uprn, String property, String street, String locality, String town, String area, String postcode) {
+        this.gssCode = gssCode;
+        this.uprn = uprn;
+        this.property = property;
+        this.street = street;
+        this.locality = locality;
+        this.town = town;
+        this.area = area;
+        this.postcode = postcode;
     }
 
     public SimpleAddress(Address address) {
@@ -74,6 +87,23 @@ public class SimpleAddress implements BaseAddress {
 
     public String getPostcode() {
         return postcode;
+    }
+
+    public SimpleAddress decrypt(String key, String iv) {
+        try {
+            return new SimpleAddress(
+                    this.gssCode,
+                    this.uprn,
+                    Strings.isNullOrEmpty(this.property) ? this.property : AesEncryptionService.decrypt(this.property, key, iv),
+                    Strings.isNullOrEmpty(this.street) ? this.street : AesEncryptionService.decrypt(this.street, key, iv),
+                    Strings.isNullOrEmpty(this.locality) ? this.locality : AesEncryptionService.decrypt(this.locality, key, iv),
+                    Strings.isNullOrEmpty(this.town) ? this.town : AesEncryptionService.decrypt(this.town, key, iv),
+                    Strings.isNullOrEmpty(this.area) ? this.area : AesEncryptionService.decrypt(this.area, key, iv),
+                    this.postcode
+            );
+        } catch (Exception e) {
+            return this;
+        }
     }
 
     @Override

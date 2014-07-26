@@ -12,6 +12,9 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Address implements BaseAddress {
 
+    @JsonProperty("iv")
+    private String iv;
+
     @JsonProperty("gssCode")
     private String gssCode;
 
@@ -43,7 +46,7 @@ public class Address implements BaseAddress {
     }
 
 
-    public Address(String gssCode, String uprn, String postcode, String country, Date createdAt, Presentation presentation, Details details, Location location, Ordering ordering) {
+    public Address(String gssCode, String uprn, String postcode, String country, Date createdAt, Presentation presentation, Details details, Location location, Ordering ordering, String iv) {
         this.gssCode = gssCode;
         this.uprn = uprn;
         this.postcode = postcode;
@@ -53,6 +56,7 @@ public class Address implements BaseAddress {
         this.details = details;
         this.location = location;
         this.ordering = ordering;
+        this.iv = iv;
     }
 
     public String getGssCode() {
@@ -91,10 +95,15 @@ public class Address implements BaseAddress {
         return ordering;
     }
 
+    public String getIv() {
+        return iv;
+    }
+
     @Override
     public String toString() {
         return "Address{" +
-                "gssCode='" + gssCode + '\'' +
+                "iv='" + iv + '\'' +
+                ", gssCode='" + gssCode + '\'' +
                 ", uprn='" + uprn + '\'' +
                 ", postcode='" + postcode + '\'' +
                 ", country='" + country + '\'' +
@@ -105,4 +114,5 @@ public class Address implements BaseAddress {
                 ", ordering=" + ordering +
                 '}';
     }
+
 }

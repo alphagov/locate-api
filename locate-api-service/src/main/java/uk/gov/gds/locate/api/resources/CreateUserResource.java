@@ -2,6 +2,7 @@ package uk.gov.gds.locate.api.resources;
 
 import com.google.common.collect.ImmutableList;
 import com.mongodb.MongoException;
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.dao.AuthorizationTokenDao;
 import uk.gov.gds.locate.api.exceptions.LocateWebException;

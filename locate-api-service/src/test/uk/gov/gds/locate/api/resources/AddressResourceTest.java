@@ -45,7 +45,7 @@ public class AddressResourceTest extends ResourceTest {
     private AuthorizationToken presentationFieldsAuthorizationToken = new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.PRESENTATION);
     private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
     private Ordering ordering = new OrderingBuilder("test").build();
-    private Address address = new Address("gssCode", "uprn", "postcode", "country", new Date(), new PresentationBuilder("test").build(), validAddress, new Location(), ordering);
+    private Address address = new Address("gssCode", "uprn", "postcode", "country", new Date(), new PresentationBuilder("test").build(), validAddress, new Location(), ordering, "iv");
     private Usage usage = new Usage("id", "identifier", 1, new Date());
 
     @Before
@@ -54,6 +54,7 @@ public class AddressResourceTest extends ResourceTest {
         when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(address));
         when(dao.findAllForPostcode(inValidPostcode)).thenReturn(Collections.<Address>emptyList());
         when(configuration.getMaxRequestsPerDay()).thenReturn(1);
+        when(configuration.getEncryptionKey()).thenReturn("key");
     }
 
     @Test
@@ -170,7 +171,7 @@ public class AddressResourceTest extends ResourceTest {
     public void shouldReturnAListOfAddressesWithoutNullFieldsAsValidJSONForASuccessfulSearch() {
         Presentation presentation = new Presentation();
 
-        Address addressWithMissingFields = new Address("gssCode", "uprn", null, "country", new Date(), presentation, validAddress, new Location(), new Ordering());
+        Address addressWithMissingFields = new Address("gssCode", "uprn", null, "country", new Date(), presentation, validAddress, new Location(), new Ordering(), "iv");
         when(dao.findAllForPostcode(validPostcode)).thenReturn(ImmutableList.of(addressWithMissingFields));
 
         String result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(String.class);
@@ -203,7 +204,7 @@ public class AddressResourceTest extends ResourceTest {
 
     @Override
     protected void setUpResources() throws Exception {
-        addResource(new AddressResource(dao));
+        addResource(new AddressResource(dao, configuration));
         addProvider(new BearerTokenAuthProvider(configuration, usageDao, new TestAuthenticator()));
         addProvider(new LocateExceptionMapper());
     }

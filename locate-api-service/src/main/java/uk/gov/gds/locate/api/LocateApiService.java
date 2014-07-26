@@ -10,6 +10,7 @@ import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
 import org.mongojack.JacksonDBCollection;
+import uk.gov.gds.locate.api.authentication.BasicAuthAuthenticator;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
@@ -74,7 +75,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Resources
          */
-        environment.addResource(new AddressResource(addressDao));
+        environment.addResource(new AddressResource(addressDao, configuration));
         environment.addResource(new PostcodeToAuthorityResource(postcodeToAuthorityDao));
         environment.addResource(new CreateUserResource(authorizationTokenDao, new BearerTokenGenerationService()));
 
@@ -91,6 +92,7 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
+      //  environment.addProvider(new BasicAuthProvider(new BasicAuthAuthenticator(), "create-user"));
         environment.addProvider(new BearerTokenAuthProvider(configuration, usageDao, new BearerTokenAuthenticator(authorizationTokenDao)));
 
         /**

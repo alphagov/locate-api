@@ -2,6 +2,7 @@ package uk.gov.gds.locate.api.resources;
 
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
+import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static uk.gov.gds.locate.api.model.DataType.*;
 import static uk.gov.gds.locate.api.services.AddressTransformationService.addressToSimpleAddress;
+import static uk.gov.gds.locate.api.services.AddressTransformationService.decryptAddressToSimpleAddress;
 import static uk.gov.gds.locate.api.services.AddressTransformationService.filter;
 
 @Path("/locate/addresses")
@@ -25,9 +27,11 @@ import static uk.gov.gds.locate.api.services.AddressTransformationService.filter
 public class AddressResource {
 
     private final AddressDao addressDao;
+    private final LocateApiConfiguration configuration;
 
-    public AddressResource(AddressDao addressDao) {
+    public AddressResource(AddressDao addressDao, LocateApiConfiguration configuration) {
         this.addressDao = addressDao;
+        this.configuration = configuration;
     }
 
     @GET
@@ -39,7 +43,8 @@ public class AddressResource {
             return buildResponse().entity(addresses).build();
         }
 
-        return buildResponse().entity(addressToSimpleAddress(addresses)).build();
+        //return buildResponse().entity(addressToSimpleAddress(addresses)).build();
+        return buildResponse().entity(decryptAddressToSimpleAddress(addresses, configuration.getEncryptionKey())).build();
     }
 
     private Response.ResponseBuilder buildResponse() {

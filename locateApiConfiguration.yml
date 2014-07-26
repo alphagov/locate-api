@@ -4,6 +4,8 @@
 
 maxRequestsPerDay: 1000
 
+encryptionKey: QWVzS2B5QmVpbmdTb21lU3RyaW5nT2ZMZW5ndGgyNTY=
+
 http:
 
     rootPath: "/*"
@@ -74,7 +76,7 @@ mongoConfiguration:
 
     port: 27017
 
-    locateDatabase: locate
+    locateDatabase: locate-encrypted
 
     credentialsDatabase: locate-credentials
 

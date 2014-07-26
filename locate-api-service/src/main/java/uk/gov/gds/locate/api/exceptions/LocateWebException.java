@@ -39,7 +39,7 @@ public class LocateWebException extends Exception {
 
     @Override
     public String toString() {
-        return "IerWebException{" +
+        return "LocateWebException{" +
                 "statusCode=" + statusCode +
                 ", body=" + body +
                 '}';

@@ -20,6 +20,11 @@ public class LocateApiConfiguration extends Configuration {
     @JsonProperty
     private Integer maxRequestsPerDay;
 
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String encryptionKey;
+
     public MongoConfiguration getMongoConfiguration() {
         return mongoConfiguration;
     }
@@ -28,11 +33,16 @@ public class LocateApiConfiguration extends Configuration {
         return maxRequestsPerDay;
     }
 
+    public String getEncryptionKey() {
+        return encryptionKey;
+    }
+
     @Override
     public String toString() {
         return "LocateApiConfiguration{" +
                 "mongoConfiguration=" + mongoConfiguration +
                 ", maxRequestsPerDay=" + maxRequestsPerDay +
+                ", encryptionKey='" + encryptionKey + '\'' +
                 '}';
     }
 }
