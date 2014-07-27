@@ -17,7 +17,7 @@ public enum DataType {
                 return dataType;
             }
         }
-        throw new IllegalArgumentException(String.format("No DueryType with value '%s'", value));
+        throw new IllegalArgumentException(String.format("No QueryType with value '%s'", value));
     }
 
     public String getType() {

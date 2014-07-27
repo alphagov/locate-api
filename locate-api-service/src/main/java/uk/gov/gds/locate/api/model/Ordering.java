@@ -3,17 +3,19 @@ package uk.gov.gds.locate.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
+import com.google.common.collect.ComparisonChain;
+import uk.gov.gds.locate.api.encryption.AesEncryptionService;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Ordering {
+public class Ordering implements Comparable<Ordering> {
 
     @JsonProperty("saoStartNumber")
     private String saoStartNumber;
 
     @JsonProperty("saoStartSuffix")
     private String saoStartSuffix;
-
 
     @JsonProperty("saoEndNumber")
     private String saoEndNumber;
@@ -103,6 +105,26 @@ public class Ordering {
         return street;
     }
 
+    public Ordering decrypt(String key, String iv) {
+        try {
+            return new Ordering(
+                    this.saoStartNumber,
+                    this.saoStartSuffix,
+                    this.saoEndNumber,
+                    this.saoEndSuffix,
+                    this.paoStartNumber,
+                    this.paoStartSuffix,
+                    this.paoEndNumber,
+                    this.paoEndSuffix,
+                    Strings.isNullOrEmpty(this.paoText) ? this.paoText : AesEncryptionService.decrypt(this.paoText, key, iv),
+                    Strings.isNullOrEmpty(this.saoText) ? this.saoText : AesEncryptionService.decrypt(this.saoText, key, iv),
+                    Strings.isNullOrEmpty(this.street) ? this.street : AesEncryptionService.decrypt(this.street, key, iv)
+            );
+        } catch (Exception e) {
+            return this;
+        }
+    }
+
     @Override
     public String toString() {
         return "Ordering{" +
@@ -118,5 +140,21 @@ public class Ordering {
                 ", saoText='" + saoText + '\'' +
                 ", street='" + street + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Ordering o) {
+        return ComparisonChain.start().
+                compare(this.saoStartNumber, o.getSaoStartNumber(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.saoStartSuffix, o.getSaoStartSuffix(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.saoEndNumber, o.getSaoEndNumber(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.saoEndSuffix, o.getSaoEndSuffix(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.paoStartNumber, o.getPaoStartNumber(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.paoStartSuffix, o.getPaoStartSuffix(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.paoEndNumber, o.getPaoEndNumber(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.paoEndSuffix, o.getPaoEndSuffix(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.saoText, o.getSaoText(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.paoText, o.getPaoText(), com.google.common.collect.Ordering.natural().nullsLast()).
+                compare(this.street, o.getStreet(), com.google.common.collect.Ordering.natural().nullsLast()).result();
     }
 }

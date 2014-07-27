@@ -1,18 +1,19 @@
 package uk.gov.gds.locate.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.soap.Detail;
 import java.util.Date;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Address implements BaseAddress {
+public class Address implements Comparable<Address> {
 
-    @JsonProperty("iv")
     private String iv;
 
     @JsonProperty("gssCode")
@@ -95,8 +96,29 @@ public class Address implements BaseAddress {
         return ordering;
     }
 
+    @JsonIgnore
     public String getIv() {
         return iv;
+    }
+
+    @JsonProperty("iv")
+    public void setIv(String iv) {
+        this.iv = iv;
+    }
+
+    public Address decrypt(String key, String iv) {
+        return new Address(
+                this.gssCode,
+                this.uprn,
+                this.postcode,
+                this.country,
+                this.createdAt,
+                this.presentation.decrypt(key, iv),
+                this.details,
+                this.location,
+                this.ordering.decrypt(key, iv),
+                this.iv
+        );
     }
 
     @Override
@@ -115,4 +137,8 @@ public class Address implements BaseAddress {
                 '}';
     }
 
+    @Override
+    public int compareTo(Address o) {
+        return this.ordering.compareTo(o.getOrdering());
+    }
 }
