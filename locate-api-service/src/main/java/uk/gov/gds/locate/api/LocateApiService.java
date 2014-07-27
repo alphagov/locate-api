@@ -5,12 +5,10 @@ import com.mongodb.MongoClient;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
-import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
 import org.mongojack.JacksonDBCollection;
-import uk.gov.gds.locate.api.authentication.BasicAuthAuthenticator;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
@@ -26,9 +24,7 @@ import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.PostcodeToAuthority;
 import uk.gov.gds.locate.api.model.Usage;
 import uk.gov.gds.locate.api.resources.AddressResource;
-import uk.gov.gds.locate.api.resources.CreateUserResource;
 import uk.gov.gds.locate.api.resources.PostcodeToAuthorityResource;
-import uk.gov.gds.locate.api.services.BearerTokenGenerationService;
 import uk.gov.gds.locate.api.tasks.MongoIndexTask;
 
 import javax.ws.rs.ext.ExceptionMapper;
@@ -47,10 +43,6 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
 
     @Override
     public void initialize(Bootstrap<LocateApiConfiguration> bootstrap) {
-        bootstrap.addBundle(new ViewBundle());
-        bootstrap.addBundle(new AssetsBundle("/assets/stylesheets", "/stylesheets"));
-        bootstrap.addBundle(new AssetsBundle("/assets/javascripts", "/javascripts"));
-        bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
     }
 
     @Override
@@ -77,7 +69,6 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
          */
         environment.addResource(new AddressResource(addressDao, configuration));
         environment.addResource(new PostcodeToAuthorityResource(postcodeToAuthorityDao));
-        environment.addResource(new CreateUserResource(authorizationTokenDao, new BearerTokenGenerationService()));
 
         /**
          * Healthchecks
@@ -92,7 +83,6 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         /**
          * Authentication
          */
-      //  environment.addProvider(new BasicAuthProvider(new BasicAuthAuthenticator(), "create-user"));
         environment.addProvider(new BearerTokenAuthProvider(configuration, usageDao, new BearerTokenAuthenticator(authorizationTokenDao)));
 
         /**

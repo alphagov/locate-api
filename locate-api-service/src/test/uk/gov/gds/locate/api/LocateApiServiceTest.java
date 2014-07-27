@@ -10,9 +10,7 @@ import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.configuration.MongoConfiguration;
 import uk.gov.gds.locate.api.healthchecks.MongoHealthCheck;
-import uk.gov.gds.locate.api.model.PostcodeToAuthority;
 import uk.gov.gds.locate.api.resources.AddressResource;
-import uk.gov.gds.locate.api.resources.CreateUserResource;
 import uk.gov.gds.locate.api.resources.PostcodeToAuthorityResource;
 
 import java.util.Collections;
@@ -47,7 +45,6 @@ public class LocateApiServiceTest {
     public void shouldAddAddressResourceToEnvironment() throws Exception {
         locateApiService.run(configuration, environment);
         verify(environment, times(1)).addResource(isA(AddressResource.class));
-        verify(environment, times(1)).addResource(isA(CreateUserResource.class));
         verify(environment, times(1)).addResource(isA(PostcodeToAuthorityResource.class));
     }
 
