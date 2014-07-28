@@ -44,7 +44,7 @@ public class AddressResourceTest extends ResourceTest {
     private AuthorizationToken allFieldsAuthorizationToken = new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL);
     private AuthorizationToken presentationFieldsAuthorizationToken = new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.PRESENTATION);
     private Details validAddress = new DetailsBuilder("test").postal(true).residential(true).electoral(true).build();
-    private Ordering ordering = new OrderingBuilder("test").build();
+    private Ordering ordering = new OrderingBuilder().build();
     private Address address = new Address("gssCode", "uprn", "postcode", "country", new Date(), new PresentationBuilder("test").build(), validAddress, new Location(), ordering, "iv");
     private Usage usage = new Usage("id", "identifier", 1, new Date());
 

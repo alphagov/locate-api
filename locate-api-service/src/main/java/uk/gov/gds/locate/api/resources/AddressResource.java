@@ -35,7 +35,14 @@ public class AddressResource {
     @Timed
     public Response fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
 
-        List<Address> addresses = decryptAndOrderAddress(filter(addressDao.findAllForPostcode(postcode), authorizationToken.getQueryType().predicate()), configuration.getEncryptionKey());
+        List<Address> addresses = orderAddresses(
+                decryptAddresses(
+                        applyPredicate(
+                                addressDao.findAllForPostcode(postcode), authorizationToken.getQueryType().predicate()
+                        ),
+                        configuration.getEncryptionKey()
+                )
+        );
         if (authorizationToken.getDataType().equals(ALL)) {
             return buildResponse().entity(addresses).build();
         }

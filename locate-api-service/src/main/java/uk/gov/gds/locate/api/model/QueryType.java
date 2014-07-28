@@ -6,15 +6,43 @@ import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 
 public enum QueryType {
-    RESIDENTIAL("residential"),
-    COMMERCIAL("commercial"),
-    RESIDENTIAL_AND_COMMERCIAL("residentialAndCommercial"),
-    ALL("all");
+    ELECTORAL("electoral", new Predicate<Address>() {
+        @Override
+        public boolean apply(@Nullable Address input) {
+            return input.getDetails().getIsElectoral() && input.getDetails().getIsPostalAddress();
+        }
+    }),
+    RESIDENTIAL("residential", new Predicate<Address>() {
+        @Override
+        public boolean apply(@Nullable Address input) {
+            return input.getDetails().getIsResidential() && input.getDetails().getIsPostalAddress();
+        }
+    }),
+    COMMERCIAL("commercial", new Predicate<Address>() {
+        @Override
+        public boolean apply(@Nullable Address input) {
+            return input.getDetails().getIsCommercial() && input.getDetails().getIsPostalAddress();
+        }
+    }),
+    RESIDENTIAL_AND_COMMERCIAL("residentialAndCommercial", new Predicate<Address>() {
+        @Override
+        public boolean apply(@Nullable Address input) {
+            return (input.getDetails().getIsCommercial() || input.getDetails().getIsResidential()) && input.getDetails().getIsPostalAddress();
+        }
+    }),
+    ALL("all", new Predicate<Address>() {
+        @Override
+        public boolean apply(@Nullable Address input) {
+            return true;
+        }
+    });
 
     private String type;
+    private final Predicate<Address> predicate;
 
-    private QueryType(String type) {
+    private QueryType(String type, Predicate<Address> predicate) {
         this.type = type;
+        this.predicate = predicate;
     }
 
     public static QueryType parse(String value) throws IllegalArgumentException {
@@ -31,23 +59,7 @@ public enum QueryType {
     }
 
     public Predicate<Address> predicate() {
-
-        return new Predicate<Address>() {
-            @Override
-            public boolean apply(@Nullable Address input) {
-                if (input == null) {
-                    return false;
-                } else if (type.equalsIgnoreCase(RESIDENTIAL.getType())) {
-                    return input.getDetails().getIsResidential() && input.getDetails().getIsPostalAddress();
-                } else if (type.equalsIgnoreCase(COMMERCIAL.getType())) {
-                    return input.getDetails().getIsCommercial() && input.getDetails().getIsPostalAddress();
-                } else if (type.equalsIgnoreCase(RESIDENTIAL_AND_COMMERCIAL.getType())) {
-                    return (input.getDetails().getIsCommercial() || input.getDetails().getIsResidential()) && input.getDetails().getIsPostalAddress();
-                } else {
-                    return true;
-                }
-            }
-        };
+        return this.predicate;
     }
 
 }

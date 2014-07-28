@@ -20,6 +20,31 @@ public class PresentationBuilder {
         this.postcode = "postcode-" + suffix;
     }
 
+    public PresentationBuilder property(String p) {
+        this.property = p;
+        return this;
+    }
+
+    public PresentationBuilder street(String p) {
+        this.street = p;
+        return this;
+    }
+
+    public PresentationBuilder locality(String p) {
+        this.locality = p;
+        return this;
+    }
+
+    public PresentationBuilder town(String p) {
+        this.town = p;
+        return this;
+    }
+
+    public PresentationBuilder area(String p) {
+        this.area = p;
+        return this;
+    }
+
     public Presentation build() {
         return new Presentation(property, street, locality, town, area, postcode);
     }

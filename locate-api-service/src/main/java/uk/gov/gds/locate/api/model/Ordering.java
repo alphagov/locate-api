@@ -12,25 +12,25 @@ import uk.gov.gds.locate.api.encryption.AesEncryptionService;
 public class Ordering implements Comparable<Ordering> {
 
     @JsonProperty("saoStartNumber")
-    private String saoStartNumber;
+    private Integer saoStartNumber;
 
     @JsonProperty("saoStartSuffix")
     private String saoStartSuffix;
 
     @JsonProperty("saoEndNumber")
-    private String saoEndNumber;
+    private Integer saoEndNumber;
 
     @JsonProperty("saoEndSuffix")
     private String saoEndSuffix;
 
     @JsonProperty("paoStartNumber")
-    private String paoStartNumber;
+    private Integer paoStartNumber;
 
     @JsonProperty("paoStartSuffix")
     private String paoStartSuffix;
 
     @JsonProperty("paoEndNumber")
-    private String paoEndNumber;
+    private Integer paoEndNumber;
 
     @JsonProperty("paoEndSuffix")
     private String paoEndSuffix;
@@ -47,7 +47,7 @@ public class Ordering implements Comparable<Ordering> {
     public Ordering() {
     }
 
-    public Ordering(String saoStartNumber, String saoStartSuffix, String saoEndNumber, String saoEndSuffix, String paoStartNumber, String paoStartSuffix, String paoEndNumber, String paoEndSuffix, String paoText, String saoText, String street) {
+    public Ordering(Integer saoStartNumber, String saoStartSuffix, Integer saoEndNumber, String saoEndSuffix, Integer paoStartNumber, String paoStartSuffix, Integer paoEndNumber, String paoEndSuffix, String paoText, String saoText, String street) {
         this.saoStartNumber = saoStartNumber;
         this.saoStartSuffix = saoStartSuffix;
         this.saoEndNumber = saoEndNumber;
@@ -61,7 +61,7 @@ public class Ordering implements Comparable<Ordering> {
         this.street = street;
     }
 
-    public String getSaoStartNumber() {
+    public Integer getSaoStartNumber() {
         return saoStartNumber;
     }
 
@@ -69,7 +69,7 @@ public class Ordering implements Comparable<Ordering> {
         return saoStartSuffix;
     }
 
-    public String getSaoEndNumber() {
+    public Integer getSaoEndNumber() {
         return saoEndNumber;
     }
 
@@ -77,7 +77,7 @@ public class Ordering implements Comparable<Ordering> {
         return saoEndSuffix;
     }
 
-    public String getPaoStartNumber() {
+    public Integer getPaoStartNumber() {
         return paoStartNumber;
     }
 
@@ -85,7 +85,7 @@ public class Ordering implements Comparable<Ordering> {
         return paoStartSuffix;
     }
 
-    public String getPaoEndNumber() {
+    public Integer getPaoEndNumber() {
         return paoEndNumber;
     }
 
@@ -141,6 +141,26 @@ public class Ordering implements Comparable<Ordering> {
                 ", street='" + street + '\'' +
                 '}';
     }
+
+
+    /**
+     * 1
+     * 2
+     * 3
+     * 4
+     * 5        TESTIGN
+     * 6
+     * <p/>
+     * List<String> toSort = Arrays.asList("aa", "b", "ccc");
+     * List<String> sortedCopy = new OrderingByLenght().sortedCopy(toSort);
+     * <p/>
+     * Ordering<String> expectedOrder = Ordering.explicit(Lists.newArrayList("b", "aa", "ccc"));
+     * assertFalse(expectedOrder.isOrdered(toSort));
+     * assertTrue(expectedOrder.isOrdered(sortedCopy));
+     *
+     * @param o
+     * @return
+     */
 
     @Override
     public int compareTo(Ordering o) {

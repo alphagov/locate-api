@@ -1,51 +1,104 @@
 package uk.gov.gds.locate.api.helpers;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.gds.locate.api.model.Ordering;
-import uk.gov.gds.locate.api.model.Presentation;
 
 public class OrderingBuilder {
 
-    private String saoStartNumber;
+    private Integer saoStartNumber;
     private String saoStartSuffix;
-    private String saoEndNumber;
+    private Integer saoEndNumber;
     private String saoEndSuffix;
-    private String paoStartNumber;
+    private Integer paoStartNumber;
     private String paoStartSuffix;
-    private String paoEndNumber;
+    private Integer paoEndNumber;
     private String paoEndSuffix;
     private String paoText;
     private String saoText;
     private String street;
 
 
-    public OrderingBuilder(String suffix) {
-        this.saoStartNumber = "saoStartNumber-" + suffix;
-        this.saoStartSuffix = "saoStartSuffix-" + suffix;
-        this.saoEndNumber = "saoEndNumber-" + suffix;
-        this.saoEndSuffix = "saoEndSuffix-" + suffix;
-        this.paoStartNumber = "paoStartNumber-" + suffix;
-        this.paoStartSuffix = "paoStartSuffix-" + suffix;
-        this.paoEndNumber = "paoEndNumber-" + suffix;
-        this.paoEndSuffix = "paoEndSuffix-" + suffix;
-        this.paoText = "paoText-" + suffix;
-        this.saoText = "saoText-" + suffix;
-        this.street = "street-" + suffix;
+    public OrderingBuilder() {
+        this.saoStartNumber = null;
+        this.saoStartSuffix = null;
+        this.saoEndNumber = null;
+        this.saoEndSuffix = null;
+        this.paoStartNumber = null;
+        this.paoStartSuffix = null;
+        this.paoEndNumber = null;
+        this.paoEndSuffix = null;
+        this.paoText = null;
+        this.saoText = null;
+        this.street = null;
+    }
+
+    public OrderingBuilder saoStartNumber(Integer i) {
+        this.saoStartNumber = i;
+        return this;
+    }
+
+    public OrderingBuilder saoStartSuffix(String i) {
+        this.saoStartSuffix = i;
+        return this;
+    }
+
+    public OrderingBuilder saoEndNumber(Integer i) {
+        this.saoEndNumber = i;
+        return this;
+    }
+
+    public OrderingBuilder saoEndSuffix(String i) {
+        this.saoEndSuffix = i;
+        return this;
+    }
+
+    public OrderingBuilder paoStartNumber(Integer i) {
+        this.paoStartNumber = i;
+        return this;
+    }
+
+    public OrderingBuilder paoStartSuffix(String i) {
+        this.paoStartSuffix = i;
+        return this;
+    }
+
+    public OrderingBuilder paoEndNumber(Integer i) {
+        this.paoEndNumber = i;
+        return this;
+    }
+
+    public OrderingBuilder paoEndSuffix(String i) {
+        this.paoEndSuffix = i;
+        return this;
+    }
+
+    public OrderingBuilder paoText(String i) {
+        this.paoText = i;
+        return this;
+    }
+
+    public OrderingBuilder saoText(String i) {
+        this.saoText = i;
+        return this;
+    }
+
+    public OrderingBuilder street(String i) {
+        this.street = i;
+        return this;
     }
 
     public Ordering build() {
         return new Ordering(
-                saoStartNumber,
-                saoStartSuffix,
-                saoEndNumber,
-                saoEndSuffix,
-                paoStartNumber,
-                paoStartSuffix,
-                paoEndNumber,
-                paoEndSuffix,
-                paoText,
-                saoText,
-                street
+                this.saoStartNumber,
+                this.saoStartSuffix,
+                this.saoEndNumber,
+                this.saoEndSuffix,
+                this.paoStartNumber,
+                this.paoStartSuffix,
+                this.paoEndNumber,
+                this.paoEndSuffix,
+                this.paoText,
+                this.saoText,
+                this.street
         );
     }
 }
