@@ -1,10 +1,10 @@
 package uk.gov.gds.locate.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PostcodeToAuthority {
 
-    @JsonProperty("_id")
     private String id;
 
     @JsonProperty("gssCode")
@@ -30,6 +30,12 @@ public class PostcodeToAuthority {
         this.name = name;
     }
 
+    @JsonProperty("_id")
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonIgnore
     public String getId() {
         return id;
     }
