@@ -5,6 +5,7 @@ Dropwizard API to power address lookups
 
 #### Heroku config properties
 
+ heroku config:set KEY=
  heroku config:set MONGO_PORT=
  heroku config:set MONGO_HOST=
  heroku config:set MONGO_DATABASE=

@@ -1,6 +1,6 @@
 package uk.gov.gds.locate.api.validation;
 
-import org.fest.util.Strings;
+import com.google.common.base.Strings;
 
 public abstract class ValidatePostcodes {
 
