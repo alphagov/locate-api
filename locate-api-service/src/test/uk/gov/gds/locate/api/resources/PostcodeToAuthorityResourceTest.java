@@ -87,6 +87,17 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldHaveAValidationFailureIfPostcodeTooLong() {
+        try {
+            client().resource("/locate/authority?postcode=12345678901").header("Authorization", validToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"postcode is invalid\"}");
+        }
+    }
+
+    @Test
     public void shouldReturnAPostcodeToAuthorityObject() {
         PostcodeToAuthority result = client().resource("/locate/authority?postcode=a11aa").header("Authorization", validToken).get(PostcodeToAuthority.class);
         verify(dao, times(1)).findForPostcode("a11aa");

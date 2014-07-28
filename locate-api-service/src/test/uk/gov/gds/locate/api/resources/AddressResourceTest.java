@@ -104,6 +104,17 @@ public class AddressResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldHaveAValidationFailureIfPostcodeTooLong() {
+        try {
+            client().resource("/locate/addresses?postcode=12345678901").header("Authorization", allDataFieldsToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"postcode is invalid\"}");
+        }
+    }
+
+    @Test
     public void shouldReturnAListOfAddressesForASuccessfulSearchWithAllFieldsToken() {
         List<Address> result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(new GenericType<List<Address>>() {
         });

@@ -1,12 +1,17 @@
 package uk.gov.gds.locate.api.resources;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.dao.AddressDao;
+import uk.gov.gds.locate.api.exceptions.LocateWebException;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.validation.ValidatePostcodes;
 
+import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,6 +19,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.gds.locate.api.model.DataType.*;
@@ -35,19 +41,26 @@ public class AddressResource {
     @Timed
     public Response fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
 
-        List<Address> addresses = orderAddresses(
-                decryptAddresses(
-                        applyPredicate(
-                                addressDao.findAllForPostcode(postcode), authorizationToken.getQueryType().predicate()
-                        ),
-                        configuration.getEncryptionKey()
-                )
-        );
-        if (authorizationToken.getDataType().equals(ALL)) {
-            return buildResponse().entity(addresses).build();
+        if (!ValidatePostcodes.isValid(postcode)) {
+            throw new LocateWebException(422, ImmutableMap.of("error", "postcode is invalid"));
         }
 
-        return buildResponse().entity(addressToSimpleAddress(addresses)).build();
+        List<Address> addresses = getAddressesFromDb(postcode);
+        List<Address> filtered = orderAddresses(applyPredicate(addresses, authorizationToken.getQueryType().predicate()));
+
+        if (authorizationToken.getDataType().equals(ALL)) {
+            return buildResponse().entity(filtered).build();
+        }
+
+        return buildResponse().entity(addressToSimpleAddress(filtered)).build();
+    }
+
+    private List<Address> getAddressesFromDb(String postcode) {
+        if (configuration.getEncrypted()) {
+            return decryptAddresses(addressDao.findAllForPostcode(postcode), configuration.getEncryptionKey());
+        } else {
+            return addressDao.findAllForPostcode(postcode);
+        }
     }
 
     private Response.ResponseBuilder buildResponse() {
