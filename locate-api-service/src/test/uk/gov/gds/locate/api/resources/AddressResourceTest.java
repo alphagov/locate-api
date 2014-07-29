@@ -20,6 +20,8 @@ import uk.gov.gds.locate.api.helpers.OrderingBuilder;
 import uk.gov.gds.locate.api.helpers.PresentationBuilder;
 import uk.gov.gds.locate.api.model.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -97,7 +99,8 @@ public class AddressResourceTest extends ResourceTest {
     @Test
     public void shouldAllowAddressesFetchWithValidAuthCredentials() {
         try {
-            client().resource("/locate/addresses").header("Authorization", allDataFieldsToken).get(Object.class);
+            when(dao.findAllForPostcode("a11aa")).thenReturn(Collections.EMPTY_LIST);
+            client().resource("/locate/addresses?postcode=a11aa").header("Authorization", allDataFieldsToken).get(Object.class);
         } catch (UniformInterfaceException e) {
             fail("Should not have rejected an API call with valid auth headers");
         }
@@ -211,6 +214,12 @@ public class AddressResourceTest extends ResourceTest {
         String result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", allDataFieldsToken).get(String.class);
         assertThat(result).contains("[]");
         verify(dao, times(1)).findAllForPostcode(inValidPostcode);
+    }
+
+    @Test
+    public void shouldCallDaoWithTidyPostcode() throws UnsupportedEncodingException {
+        client().resource("/locate/addresses?postcode=" + URLEncoder.encode(" PE1 1eR ", "UTF-8")).header("Authorization", allDataFieldsToken).get(String.class);
+        verify(dao, times(1)).findAllForPostcode("pe11er");
     }
 
     @Override

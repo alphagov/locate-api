@@ -10,12 +10,8 @@ public class LocateWebException extends Exception {
     private final int statusCode;
     private final Object body;
 
-    public LocateWebException(int statusCode, Object body) {
-        this(statusCode, body, null);
-    }
 
-    public LocateWebException(int statusCode, Object body, Throwable cause) {
-        super(cause);
+    public LocateWebException(int statusCode, Object body) {
         this.statusCode = statusCode;
         this.body = body;
     }

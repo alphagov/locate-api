@@ -43,7 +43,7 @@ public class AddressResource {
             throw new LocateWebException(422, ImmutableMap.of("error", "postcode is invalid"));
         }
 
-        List<Address> addresses = getAddressesFromDb(postcode);
+        List<Address> addresses = getAddressesFromDb(tidyPostcode(postcode));
         List<Address> filtered = orderAddresses(applyPredicate(addresses, authorizationToken.getQueryType().predicate()));
 
         if (authorizationToken.getDataType().equals(ALL)) {
@@ -51,6 +51,10 @@ public class AddressResource {
         }
 
         return buildResponse().entity(addressToSimpleAddress(filtered)).build();
+    }
+
+    private String tidyPostcode(String postcode) {
+        return postcode.toLowerCase().trim().replace(" ","");
     }
 
     private List<Address> getAddressesFromDb(String postcode) {
