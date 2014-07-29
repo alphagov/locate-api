@@ -3,7 +3,9 @@ package uk.gov.gds.locate.api;
 import com.mongodb.MongoException;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.config.FilterBuilder;
 import com.yammer.dropwizard.json.ObjectMapperFactory;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
@@ -26,9 +28,11 @@ public class LocateApiServiceTest {
     private MongoConfiguration mongoConfiguration = mock(MongoConfiguration.class);
     private ResourceConfig resourceConfig = mock(ResourceConfig.class);
     private ObjectMapperFactory objectMapperFactory = mock(ObjectMapperFactory.class);
+    private FilterBuilder filterBuilder = mock(FilterBuilder.class);
 
     @Before
     public void setUp() {
+
         when(mongoConfiguration.getLocateDatabase()).thenReturn("locate");
         when(mongoConfiguration.getCredentialsDatabase()).thenReturn("locate");
         when(mongoConfiguration.getHosts()).thenReturn("localhost");
@@ -36,6 +40,8 @@ public class LocateApiServiceTest {
 
         when(configuration.getMongoConfiguration()).thenReturn(mongoConfiguration);
 
+        when(filterBuilder.setInitParam(anyString(), anyString())).thenReturn(filterBuilder);
+        when(environment.addFilter(CrossOriginFilter.class, "*")).thenReturn(filterBuilder);
         when(environment.getJerseyResourceConfig()).thenReturn(resourceConfig);
         when(environment.getObjectMapperFactory()).thenReturn(objectMapperFactory);
         when(resourceConfig.getSingletons()).thenReturn(Collections.EMPTY_SET);
@@ -94,6 +100,16 @@ public class LocateApiServiceTest {
         locateApiService.run(configuration, environment);
         verify(mongoConfiguration, times(1)).getLocateDatabase();
         verify(mongoConfiguration, times(1)).getCredentialsDatabase();
+    }
+
+    @Test
+    public void shouldSetUpCorsFilter() throws Exception {
+        when(configuration.getAllowedOrigins()).thenReturn("here and only here");
+        locateApiService.run(configuration, environment);
+        verify(environment, times(1)).addFilter(CrossOriginFilter.class, "*");
+        verify(filterBuilder, times(1)).setInitParam("allowedOrigins", "here and only here");
+        verify(filterBuilder, times(1)).setInitParam("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin,Authorization");
+        verify(filterBuilder, times(1)).setInitParam("allowedMethods", "OPTIONS,GET");
     }
 
 }

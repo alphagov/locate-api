@@ -30,6 +30,11 @@ public class LocateApiConfiguration extends Configuration {
     @JsonProperty
     private Boolean encrypted;
 
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String allowedOrigins;
+
     public MongoConfiguration getMongoConfiguration() {
         return mongoConfiguration;
     }
@@ -46,6 +51,10 @@ public class LocateApiConfiguration extends Configuration {
         return encrypted;
     }
 
+    public String getAllowedOrigins() {
+        return allowedOrigins;
+    }
+
     @Override
     public String toString() {
         return "LocateApiConfiguration{" +
@@ -53,6 +62,7 @@ public class LocateApiConfiguration extends Configuration {
                 ", maxRequestsPerDay=" + maxRequestsPerDay +
                 ", encryptionKey='" + encryptionKey + '\'' +
                 ", encrypted=" + encrypted +
+                ", allowedOrigins='" + allowedOrigins + '\'' +
                 '}';
     }
 }

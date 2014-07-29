@@ -5,6 +5,7 @@ import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 import uk.gov.gds.locate.api.dao.PostcodeToAuthorityDao;
 import uk.gov.gds.locate.api.exceptions.LocateWebException;
+import uk.gov.gds.locate.api.exceptions.ResourceNotFoundException;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
 import uk.gov.gds.locate.api.model.PostcodeToAuthority;
 import uk.gov.gds.locate.api.validation.ValidatePostcodes;
@@ -31,6 +32,8 @@ public class PostcodeToAuthorityResource {
         if (!ValidatePostcodes.isValid(postcode)) {
             throw new LocateWebException(422, ImmutableMap.of("error", "postcode is invalid"));
         }
-        return dao.findForPostcode(postcode);
+        PostcodeToAuthority postcodeToAuthority = dao.findForPostcode(postcode);
+        if(postcodeToAuthority == null) throw new ResourceNotFoundException();
+        return postcodeToAuthority;
     }
 }
