@@ -4,7 +4,7 @@
 
 maxRequestsPerDay: 1000
 
-encrypted: false
+encrypted: true
 
 encryptionKey: QWVzS2B5QmVpbmdTb21lU3RyaW5nT2ZMZW5ndGgyNTY=
 
