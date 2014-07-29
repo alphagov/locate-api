@@ -160,6 +160,7 @@ The following environment properties must be set for the application to work in 
         heroku config:set MONGO_DATABASE=
         heroku config:set MONGO_USER=
         heroku config:set MONGO_PASSWORD=
+        heroku config:set ALLOWED_ORIGINS=
      
  
  
