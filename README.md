@@ -3,7 +3,42 @@ Locate Api
 
 The Locate API is a simple API to enable access to a Mongo database containing UK address information.
 
+This service is built on the top of AddressBase premium, an Ordinance Survey data product, available to the public sector under the terms of the PSMA.
+
+The importer project, https://github.com/alphagov/location-data-importer , transforms this data into a mongo database, which underpins the services described below.
+
+Full details of the source data are contained in the importer project, and the docs folder has all the PDFs that the OS made available.
+
 ## Usage
+
+### Authorization
+
+The API uses Bearer token Authorization headers for access control.
+
+    curl -H"Authorization: Bearer my_token" https://url-to-api/locate/addresses?postcode=sw11er 
+
+These tokens must relate to an entry in a collection entitled authorizationToken. The details of this collection are:
+
+    {
+    	"_id" : ObjectId("object_id"),
+    	"name" : "username",
+    	"identifier" : "username@email.gov.uk",
+    	"organisation" : "test org",
+    	"token" : "this is my credentials",
+    	"queryType" : "residential",
+    	"dataType" : "all"
+    }
+
+The frontend project to this api: https://github.com/alphagov/locate-api-frontend is a web app that populates this table. Though you can create it by hand.
+
+All fields are required.
+
+    * name: meta data on user.
+    * identifier: unique identifier, used as FK for rate limiting. Frontend populates this with email addresses.
+    * organisation: meta data on users parent org.
+    * token: actual bearer token.
+    * queryType: see below for outline.
+    * dataType: see below for outline.
 
 ### Address Lookups
 
@@ -17,21 +52,7 @@ There is only one query parameter:
     
 ### Queries
 
-Each credential is associated with a query:
-
-Example authorization mongo document:
-
-    {
-    	"_id" : ObjectId("object_id"),
-    	"name" : "username",
-    	"identifier" : "username@email.gov.uk",
-    	"organisation" : "test org",
-    	"token" : "this is my credentials",
-    	"queryType" : "residential",
-    	"dataType" : "all"
-    }
-
-The fields that control the query are:
+The following fields in the authorization collection determine the query associated with this toke:
 
     * queryType: this restricts the results.
     
@@ -39,17 +60,34 @@ The fields that control the query are:
 
 ### Query Type
 
-These are predetermined queries the API will support.
+These are the predetermined queries the API will support.
 
-    * Residential: Returns only residential properties.
+    * residential: Returns only residential properties.
     
-    * Commercial: Returns only commercial properties.
+    * commercial: Returns only commercial properties.
     
-    * Residential And Commercial: Returns the combination of residential and commercial queries.
+    * residentialAndCommercial: Returns the combination of residential and commercial queries.
    
-    * Electoral: Returns properties that are deemed residential for the purposes of registering to vote, residential above plus some educational, hospital etc addresses which people may reside.
+    * electoral: Returns properties that are deemed residential for the purposes of registering to vote, residential above plus some educational, hospital etc addresses in which people may reside.
     
-    * All: Returns an unfiltered view of the address database.
+    * all: Returns an unfiltered view of the address database.
+    
+The data to enable this is derived from classification codes that each record has, these can be found in the documentation section of the importer project. https://github.com/alphagov/location-data-importer    
+    
+    * residential: codes beginning
+        - R (generic residential)
+        - RH (multiple occupancy)
+        - RD (residential dwelling)
+        - RI (institute - nursing homes etc)
+        - X (dual use - pubs and so on)
+    * commercial: codes beginning
+        - C (generic commercial)
+        - NOT CE (education)
+    * electoral: codes beginning
+        - with residential codes above OR
+        - CE01 (college)
+        - CE05 (univeristy)
+    * all: no filtering
     
 ### Data Type
 
@@ -78,8 +116,7 @@ This controls the amount of data returned for each address.
     - gssCode: Government Statistical Service code for the Local Authority this address resides in.
 
 
-
-    * All: The returns the full data set for an address. In most cases this is not neccessary.
+    * All: The returns the full data set for an address. In most use cases the presentation object will be sufficient.
         {
             "gssCode": "E09000032",
             "country": "England",
@@ -120,6 +157,10 @@ This controls the amount of data returned for each address.
 
 ### Authority Lookups
 
+This API call returnes the basic statistical geography for a postcode.
+
+    curl -H"Authorization: Bearer credentials" https://host/locate/authority?postcode=kt70tj
+
         {
             "postcode": "sw112dr",
             "country": "England",
@@ -127,16 +168,35 @@ This controls the amount of data returned for each address.
             "name": "Wandsworth"
         }
 
+### Granularity
 
-## Authorization
+Properties have a 1 to 1 mapping to statistical geographies. However the same does not hold true for postcodes. The address API call maps the properties to the
+gssCode at a property level. This ensures that when a postcode crosses a boundary the properties are correctly associated with either side of the boundary.
 
-The API uses Bearer token Authorization headers for access control.
+As the authority lookup is only on a per postcode basis this level of accuracy is not available.
 
+Details of the authority data and it's accuracy are available in the OS documentation.
+
+## Indexing
+
+Run the dropwizard mongo-index task to index the database:
+
+    curl -X POST http://host/tasks/mongo-index
+    
+This indexes the auth collections. The address indexes are applied during import.
+
+## Rate Limiting
+
+This API has very simple rate limiting. It utilises mongo TTL indexes and a collection entitled usage,
+
+Every successful auth increments a usage count document for that identifier, and these are removed by mongod at midnight every night.
+
+The limit is configured in the yaml file, default 1000.
 
 ## SetUp
 
 ### Prerequisites 
-    * MongoDB: The locate API utilised mongo as it's datastore.
+    * MongoDB: The locate API utilises mongo as it's datastore.
     
     * Data: The datastore must contain an addresses database. This can be built from: https://github.com/alphagov/location-data-importer
 
@@ -151,7 +211,7 @@ The API uses Bearer token Authorization headers for access control.
 
 #### Heroku
 
-The following environment properties must be set for the application to work in Heroku. These will override the default settings in the application yaml file.
+The following environment properties must be set for the application to work in Heroku. The Procfile will override the default settings in the application yaml file.
 
         heroku config:set ENCRYPTED=
         heroku config:set KEY=
@@ -163,9 +223,8 @@ The following environment properties must be set for the application to work in 
         heroku config:set ALLOWED_ORIGINS=
      
  
- 
 ### License
-Issued under MIT (see LISCENSE)
+Issued under MIT (see LICENSE)
 
 ### Copyright
 Copyright (c) 2014 HM Government
