@@ -7,7 +7,7 @@ This service is built on the top of AddressBase premium, an Ordinance Survey dat
 
 The importer project, https://github.com/alphagov/location-data-importer , transforms this data into a mongo database, which underpins the services described below.
 
-Full details of the source data are contained in the importer project, and the docs folder has all the PDFs that the OS made available.
+Full details of the source data are contained in the importer project, in the docs folder.
 
 ## Usage
 
@@ -29,7 +29,7 @@ These tokens must relate to an entry in a collection entitled authorizationToken
     	"dataType" : "all"
     }
 
-The frontend project to this api: https://github.com/alphagov/locate-api-frontend is a web app that populates this table. Though you can create it by hand.
+The frontend project to this api: https://github.com/alphagov/locate-api-frontend is a web app that populates this collection.
 
 All fields are required.
 
@@ -50,6 +50,7 @@ There is only one query parameter:
 
     postcode=a11aa
     
+    
 ### Queries
 
 The following fields in the authorization collection determine the query associated with this toke:
@@ -60,7 +61,7 @@ The following fields in the authorization collection determine the query associa
 
 ### Query Type
 
-These are the predetermined queries the API will support.
+These are the predetermined queries the API will support. These are defined in the authorization collection.
 
     * residential: Returns only residential properties.
     
@@ -72,9 +73,9 @@ These are the predetermined queries the API will support.
     
     * all: Returns an unfiltered view of the address database.
     
-The data to enable this is derived from classification codes that each record has, these can be found in the documentation section of the importer project. https://github.com/alphagov/location-data-importer    
+The data to enable this is derived from classification codes that each record has, these can be found in the documentation section of the importer project. https://github.com/alphagov/location-data-importer/blob/master/docs/address-base/addressbase-products-classification-codes.pdf    
     
-    * residential: codes beginning
+    * residential: are all addresses with codes beginning
         - R (generic residential)
         - RH (multiple occupancy)
         - RD (residential dwelling)
@@ -93,7 +94,7 @@ The data to enable this is derived from classification codes that each record ha
 
 This controls the amount of data returned for each address. 
 
-    * Presentation: This returns the minimum data set for an address. Suitable for most web based applications.
+* Presentation: This returns the minimum data set for an address. Suitable for most web based applications.
     
         {
             "property": "Flat A",
@@ -106,17 +107,16 @@ This controls the amount of data returned for each address.
             "gssCode": "E09000032"
         }
     
-    - property: Contains lowest granularity, flat numbers, house names and so on
-    - street: Street number plus street name
-    - locality: Area within a post town
-    - town: Town name
-    - area: Administrative area
-    - postcode: Postcode, formatted for display
-    - uprn: Unique Property Reference Number
-    - gssCode: Government Statistical Service code for the Local Authority this address resides in.
+- property: Contains lowest granularity, flat numbers, house names and so on
+- street: Street number plus street name
+- locality: Area within a post town
+- town: Town name
+- area: Administrative area
+- postcode: Postcode, formatted for display
+- uprn: Unique Property Reference Number
+- gssCode: Government Statistical Service code for the Local Authority this address resides in.
 
-
-    * All: The returns the full data set for an address. In most use cases the presentation object will be sufficient.
+* All: The returns the full data set for an address. In most use cases the presentation object will be sufficient.
         {
             "gssCode": "E09000032",
             "country": "England",
@@ -159,7 +159,7 @@ This controls the amount of data returned for each address.
 
 This API call returnes the basic statistical geography for a postcode.
 
-    curl -H"Authorization: Bearer credentials" https://host/locate/authority?postcode=kt70tj
+curl -H"Authorization: Bearer credentials" https://host/locate/authority?postcode=kt70tj
 
         {
             "postcode": "sw112dr",
@@ -175,7 +175,7 @@ gssCode at a property level. This ensures that when a postcode crosses a boundar
 
 As the authority lookup is only on a per postcode basis this level of accuracy is not available.
 
-Details of the authority data and it's accuracy are available in the OS documentation.
+Details of the authority data and it's accuracy are available in the OS documentation - https://github.com/alphagov/location-data-importer/blob/master/docs/code-point-user-guide.pdf.
 
 ## Indexing
 
@@ -196,17 +196,17 @@ The limit is configured in the yaml file, default 1000.
 ## SetUp
 
 ### Prerequisites 
-    * MongoDB: The locate API utilises mongo as it's datastore.
-    
-    * Data: The datastore must contain an addresses database. This can be built from: https://github.com/alphagov/location-data-importer
+* MongoDB: The locate API utilises mongo as it's datastore.
+
+* Data: The datastore must contain an addresses database. This can be built from: https://github.com/alphagov/location-data-importer
 
 ### Running
 
-    * There are scripts in the root of the project:
-        
-           * ./run-api.sh - will start the API.
-           
-           * ./run-debug-api.sh - will start the API in debug mode.
+* There are scripts in the root of the project:
+    
+       * ./run-api.sh - will start the API.
+       
+       * ./run-debug-api.sh - will start the API in debug mode.
 
 
 #### Heroku
