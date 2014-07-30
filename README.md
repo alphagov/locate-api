@@ -107,14 +107,14 @@ This controls the amount of data returned for each address.
             "gssCode": "E09000032"
         }
     
-- property: Contains lowest granularity, flat numbers, house names and so on
-- street: Street number plus street name
-- locality: Area within a post town
-- town: Town name
-- area: Administrative area
-- postcode: Postcode, formatted for display
-- uprn: Unique Property Reference Number
-- gssCode: Government Statistical Service code for the Local Authority this address resides in.
+        - property: Contains lowest granularity, flat numbers, house names and so on
+        - street: Street number plus street name
+        - locality: Area within a post town
+        - town: Town name
+        - area: Administrative area
+        - postcode: Postcode, formatted for display
+        - uprn: Unique Property Reference Number
+        - gssCode: Government Statistical Service code for the Local Authority this address resides in.
 
 * All: The returns the full data set for an address. In most use cases the presentation object will be sufficient.
         
