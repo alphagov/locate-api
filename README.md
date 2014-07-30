@@ -117,6 +117,7 @@ This controls the amount of data returned for each address.
 - gssCode: Government Statistical Service code for the Local Authority this address resides in.
 
 * All: The returns the full data set for an address. In most use cases the presentation object will be sufficient.
+        
         {
             "gssCode": "E09000032",
             "country": "England",
