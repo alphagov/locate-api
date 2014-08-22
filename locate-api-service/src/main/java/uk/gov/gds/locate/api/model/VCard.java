@@ -26,6 +26,9 @@ public class VCard {
     @JsonProperty("postal-code")
     private String postalCode;
 
+    @JsonProperty("country")
+    private String country;
+
     @JsonProperty("x-uprn")
     private String uprn;
 
@@ -42,23 +45,26 @@ public class VCard {
                 address.getPresentation().getTown(),
                 address.getPresentation().getArea(),
                 address.getPresentation().getPostcode(),
-                address.getUprn()
+                address.getUprn(),
+                address.getCountry()
         );
     }
 
-    public VCard(String extendedAddress, String streetAddress, String locality, String region, String postalCode, String uprn) {
+    public VCard(String extendedAddress, String streetAddress, String locality, String region, String postalCode, String uprn, String country) {
         this.extendedAddress = extendedAddress;
         this.streetAddress = streetAddress;
         this.locality = locality;
         this.region = region;
         this.postalCode = postalCode;
         this.uprn = uprn;
-        this.vcard = String.format("ADR;:;;%s;%s;%s;%s;%s",
+        this.country = country;
+        this.vcard = String.format("ADR;:;;%s;%s;%s;%s;%s;%s",
                 Objects.firstNonNull(extendedAddress, ""),
                 Objects.firstNonNull(streetAddress, ""),
                 Objects.firstNonNull(locality, ""),
                 Objects.firstNonNull(region, ""),
-                Objects.firstNonNull(postalCode, "")
+                Objects.firstNonNull(postalCode, ""),
+                Objects.firstNonNull(country, "")
         );
     }
 
@@ -91,6 +97,10 @@ public class VCard {
     }
 
 
+    public String getCountry() {
+        return country;
+    }
+
     @Override
     public String toString() {
         return "VCard{" +
@@ -99,6 +109,7 @@ public class VCard {
                 ", locality='" + locality + '\'' +
                 ", region='" + region + '\'' +
                 ", postalCode='" + postalCode + '\'' +
+                ", country='" + country + '\'' +
                 ", uprn='" + uprn + '\'' +
                 ", vcard='" + vcard + '\'' +
                 '}';

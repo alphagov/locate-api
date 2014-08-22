@@ -245,7 +245,7 @@ public class AddressResourceTest extends ResourceTest {
         assertThat(result).contains("\"locality\":\"town-test\"");
         assertThat(result).contains("\"region\":\"area-test\"");
         assertThat(result).contains("\"postal-code\":\"postcode-test\"");
-        assertThat(result).contains("\"vcard\":\"ADR;:;;property-test;street-test;town-test;area-test;postcode-test\"");
+        assertThat(result).contains("\"vcard\":\"ADR;:;;property-test;street-test;town-test;area-test;postcode-test;country\"");
     }
 
     @Override

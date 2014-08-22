@@ -164,8 +164,9 @@ This controls the amount of data returned for each address.
             "locality":"Thames Ditton",
             "region":"Surrey",
             "postal-code":"KT7 0TJ"
+            "country":"England"
             "x-uprn":"10033321838",
-            "vcard":"ADR;:;;1 Sovereign Place;Queens Drive;Thames Ditton;Surrey;KT7 0TJ",
+            "vcard":"ADR;:;;1 Sovereign Place;Queens Drive;Thames Ditton;Surrey;KT7 0TJ;England",
         }
 
     The fields here confirm to the vCard adr field.
