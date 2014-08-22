@@ -26,7 +26,7 @@ public class VCard {
     @JsonProperty("postal-code")
     private String postalCode;
 
-    @JsonProperty("uprn")
+    @JsonProperty("x-uprn")
     private String uprn;
 
     @JsonProperty("vcard")

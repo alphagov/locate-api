@@ -239,7 +239,7 @@ public class AddressResourceTest extends ResourceTest {
     public void shouldReturnAListOfVCardFormattedAddressesAsValidJSONForASuccessfulSearchWith() {
         String result = client().resource("/locate/addresses?format=vcard&postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(String.class);
         verify(dao, times(1)).findAllForPostcode(validPostcode);
-        assertThat(result).contains("\"uprn\":\"uprn\"");
+        assertThat(result).contains("\"x-uprn\":\"uprn\"");
         assertThat(result).contains("\"extended-address\":\"property-test\"");
         assertThat(result).contains("\"street-address\":\"street-test\"");
         assertThat(result).contains("\"locality\":\"town-test\"");

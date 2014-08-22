@@ -46,10 +46,10 @@ The first use case is address lookups. The basic call (curl example):
 
     curl -H"Authorization: Bearer credentials" https://host/locate/addresses?postcode=kt70tj
     
-There is only one query parameter: 
+Query parameters:
 
     postcode=a11aa
-    
+    format=vcard [optional|spike] vcard is the only option here and overrides the data type described below. Spike in lieu of addressing standards.
     
 ### Queries
 
@@ -155,6 +155,28 @@ This controls the amount of data returned for each address.
                 "street": "LATCHMERE ROAD"
             }
         }
+
+* Vcard. Using the query parameter format, and the value vcard will return the following structure - overriding the above.
+
+    {
+        "extended-address":"1 Sovereign Place",
+        "street-address":"Queens Drive",
+        "locality":"Thames Ditton",
+        "region":"Surrey",
+        "postal-code":"KT7 0TJ"
+        "x-uprn":"10033321838",
+        "vcard":"ADR;:;;1 Sovereign Place;Queens Drive;Thames Ditton;Surrey;KT7 0TJ",
+    }
+
+    The fields here confirm to the vCard adr field.
+    
+    * extended-address is the property field from the presentation block above
+    * street-address is the street field from the presentation block above
+    * locality is the town from the presentation block above
+    * region is the area from the presentation block above
+    * postal-code is postcode
+    * x-uprn as above, extension to vcard to allow for URPN
+    * vcard is a convience that formats the rest of the fields as a vcard compatible string.
 
 ### Authority Lookups
 
