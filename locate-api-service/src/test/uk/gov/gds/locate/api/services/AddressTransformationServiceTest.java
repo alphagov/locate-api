@@ -37,6 +37,74 @@ public class AddressTransformationServiceTest {
     }
 
     @Test
+    public void shouldConvertAddressesToVCardFormat() {
+
+        Details detailsOne = new DetailsBuilder("1").commercial(true).postal(true).residential(true).electoral(true).higherEducational(true).build();
+        Details detailsTwo = new DetailsBuilder("2").commercial(true).postal(true).residential(true).electoral(true).higherEducational(true).build();
+        Details detailsThree = new DetailsBuilder("3").commercial(true).postal(true).residential(true).electoral(true).higherEducational(true).build();
+
+        Presentation pOne = new PresentationBuilder("1").build();
+        Presentation pTwo = new PresentationBuilder("2").build();
+        Presentation pThree = new PresentationBuilder("3").build();
+
+        Ordering o1 = new OrderingBuilder().build();
+        Ordering o2 = new OrderingBuilder().build();
+        Ordering o3 = new OrderingBuilder().build();
+
+        Address aOne = new Address("gssCode-1", "uprn-1", "postcode-1", "country", new Date(), pOne, detailsOne, location(1.1, 2.2), o1, "iv");
+        Address aTwo = new Address("gssCode-2", "uprn-2", "postcode-2", "country-2", new Date(), pTwo, detailsTwo, location(1.1, 2.2), o2, "iv");
+        Address aThree = new Address("gssCode-3", "uprn-3", "postcode-3", "country-3", new Date(), pThree, detailsThree, location(1.1, 2.2), o3, "iv");
+
+        List<VCard> transformed = AddressTransformationService.addressToVCard(ImmutableList.of(aOne, aTwo, aThree));
+
+        assertThat(transformed.size()).isEqualTo(3);
+
+        assertThat(transformed.get(0).getUprn()).isEqualTo("uprn-1");
+        assertThat(transformed.get(0).getExtendedAddress()).isEqualTo("property-1");
+        assertThat(transformed.get(0).getStreetAddress()).isEqualTo("street-1");
+        assertThat(transformed.get(0).getLocality()).isEqualTo("town-1");
+        assertThat(transformed.get(0).getRegion()).isEqualTo("area-1");
+        assertThat(transformed.get(0).getPostalCode()).isEqualTo("postcode-1");
+        assertThat(transformed.get(0).getVcard()).isEqualTo("ADR;:;;property-1;street-1;town-1;area-1;postcode-1");
+
+        assertThat(transformed.get(1).getUprn()).isEqualTo("uprn-2");
+        assertThat(transformed.get(1).getExtendedAddress()).isEqualTo("property-2");
+        assertThat(transformed.get(1).getStreetAddress()).isEqualTo("street-2");
+        assertThat(transformed.get(1).getLocality()).isEqualTo("town-2");
+        assertThat(transformed.get(1).getRegion()).isEqualTo("area-2");
+        assertThat(transformed.get(1).getPostalCode()).isEqualTo("postcode-2");
+        assertThat(transformed.get(1).getVcard()).isEqualTo("ADR;:;;property-2;street-2;town-2;area-2;postcode-2");
+
+        assertThat(transformed.get(2).getUprn()).isEqualTo("uprn-3");
+        assertThat(transformed.get(2).getExtendedAddress()).isEqualTo("property-3");
+        assertThat(transformed.get(2).getStreetAddress()).isEqualTo("street-3");
+        assertThat(transformed.get(2).getLocality()).isEqualTo("town-3");
+        assertThat(transformed.get(2).getRegion()).isEqualTo("area-3");
+        assertThat(transformed.get(2).getPostalCode()).isEqualTo("postcode-3");
+        assertThat(transformed.get(2).getVcard()).isEqualTo("ADR;:;;property-3;street-3;town-3;area-3;postcode-3");
+
+    }
+
+    @Test
+    public void shouldConvertAddressToVCardSettingFieldsToNullIfNotPresent() {
+        Details d = new DetailsBuilder("1").commercial(true).postal(true).residential(true).electoral(true).higherEducational(true).build();
+        Presentation p = new Presentation(null, null, null, null, null, null);
+        Address address = new Address("gssCode-1", "uprn-1", "postcode-1", "country", new Date(), p, d, location(1.1, 2.2), new OrderingBuilder().build(), "iv");
+
+        List<VCard> transformed = AddressTransformationService.addressToVCard(ImmutableList.of(address));
+
+        assertThat(transformed.size()).isEqualTo(1);
+
+        assertThat(transformed.get(0).getUprn()).isEqualTo("uprn-1");
+        assertThat(transformed.get(0).getExtendedAddress()).isNullOrEmpty();
+        assertThat(transformed.get(0).getStreetAddress()).isNullOrEmpty();
+        assertThat(transformed.get(0).getLocality()).isNullOrEmpty();
+        assertThat(transformed.get(0).getRegion()).isNullOrEmpty();
+        assertThat(transformed.get(0).getPostalCode()).isNullOrEmpty();
+        assertThat(transformed.get(0).getVcard()).isEqualTo("ADR;:;;;;;;");
+    }
+
+    @Test
     public void shouldConvertAddressToSimpleAddressSettingFieldsToNullIfNotPresent() {
         Details d = new DetailsBuilder("1").commercial(true).postal(true).residential(true).electoral(true).higherEducational(true).build();
         Presentation p = new Presentation(null, null, null, null, null, null);

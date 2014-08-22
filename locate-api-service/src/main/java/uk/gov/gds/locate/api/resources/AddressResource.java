@@ -1,5 +1,6 @@
 package uk.gov.gds.locate.api.resources;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.yammer.dropwizard.auth.Auth;
@@ -9,6 +10,7 @@ import uk.gov.gds.locate.api.dao.AddressDao;
 import uk.gov.gds.locate.api.exceptions.LocateWebException;
 import uk.gov.gds.locate.api.model.Address;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
+import uk.gov.gds.locate.api.validation.ValidateFormat;
 import uk.gov.gds.locate.api.validation.ValidatePostcodes;
 
 import javax.annotation.concurrent.Immutable;
@@ -37,14 +39,22 @@ public class AddressResource {
 
     @GET
     @Timed
-    public Response fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode) throws Exception {
+    public Response fetchAddresses(@Auth AuthorizationToken authorizationToken, @QueryParam("postcode") String postcode, @QueryParam("format") String format) throws Exception {
 
         if (!ValidatePostcodes.isValid(postcode)) {
             throw new LocateWebException(422, ImmutableMap.of("error", "postcode is invalid"));
         }
 
+        if (!ValidateFormat.isValid(format)) {
+            throw new LocateWebException(422, ImmutableMap.of("error", "format is invalid"));
+        }
+
         List<Address> addresses = getAddressesFromDb(tidyPostcode(postcode));
         List<Address> filtered = orderAddresses(applyPredicate(addresses, authorizationToken.getQueryType().predicate()));
+
+        if (!Strings.isNullOrEmpty(format) && format.equals("vcard")) {
+            return buildResponse().entity(addressToVCard(filtered)).build();
+        }
 
         if (authorizationToken.getDataType().equals(ALL)) {
             return buildResponse().entity(filtered).build();
@@ -54,7 +64,7 @@ public class AddressResource {
     }
 
     private String tidyPostcode(String postcode) {
-        return postcode.toLowerCase().trim().replace(" ","");
+        return postcode.toLowerCase().trim().replace(" ", "");
     }
 
     private List<Address> getAddressesFromDb(String postcode) {

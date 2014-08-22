@@ -118,6 +118,18 @@ public class AddressResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldHaveAValidationFailureIfFormatInvalid() {
+        try {
+            client().resource("/locate/addresses?format=swsw&postcode=pe191er").header("Authorization", allDataFieldsToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"format is invalid\"}");
+        }
+    }
+
+
+    @Test
     public void shouldReturnAListOfAddressesForASuccessfulSearchWithAllFieldsToken() {
         List<Address> result = client().resource("/locate/addresses?postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(new GenericType<List<Address>>() {
         });
@@ -201,6 +213,7 @@ public class AddressResourceTest extends ResourceTest {
     }
 
 
+
     @Test
     public void shouldReturnAnEmptyListOfAddressesForAnUnsuccessfulSearch() {
         List<SimpleAddress> result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", allDataFieldsToken).get(new GenericType<List<SimpleAddress>>() {
@@ -220,6 +233,19 @@ public class AddressResourceTest extends ResourceTest {
     public void shouldCallDaoWithTidyPostcode() throws UnsupportedEncodingException {
         client().resource("/locate/addresses?postcode=" + URLEncoder.encode(" PE1 1eR ", "UTF-8")).header("Authorization", allDataFieldsToken).get(String.class);
         verify(dao, times(1)).findAllForPostcode("pe11er");
+    }
+
+    @Test
+    public void shouldReturnAListOfVCardFormattedAddressesAsValidJSONForASuccessfulSearchWith() {
+        String result = client().resource("/locate/addresses?format=vcard&postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(String.class);
+        verify(dao, times(1)).findAllForPostcode(validPostcode);
+        assertThat(result).contains("\"uprn\":\"uprn\"");
+        assertThat(result).contains("\"extended-address\":\"property-test\"");
+        assertThat(result).contains("\"street-address\":\"street-test\"");
+        assertThat(result).contains("\"locality\":\"town-test\"");
+        assertThat(result).contains("\"region\":\"area-test\"");
+        assertThat(result).contains("\"postal-code\":\"postcode-test\"");
+        assertThat(result).contains("\"vcard\":\"ADR;:;;property-test;street-test;town-test;area-test;postcode-test\"");
     }
 
     @Override
