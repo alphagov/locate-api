@@ -158,15 +158,15 @@ This controls the amount of data returned for each address.
 
 * Vcard. Using the query parameter format, and the value vcard will return the following structure - overriding the above.
 
-    {
-        "extended-address":"1 Sovereign Place",
-        "street-address":"Queens Drive",
-        "locality":"Thames Ditton",
-        "region":"Surrey",
-        "postal-code":"KT7 0TJ"
-        "x-uprn":"10033321838",
-        "vcard":"ADR;:;;1 Sovereign Place;Queens Drive;Thames Ditton;Surrey;KT7 0TJ",
-    }
+        {
+            "extended-address":"1 Sovereign Place",
+            "street-address":"Queens Drive",
+            "locality":"Thames Ditton",
+            "region":"Surrey",
+            "postal-code":"KT7 0TJ"
+            "x-uprn":"10033321838",
+            "vcard":"ADR;:;;1 Sovereign Place;Queens Drive;Thames Ditton;Surrey;KT7 0TJ",
+        }
 
     The fields here confirm to the vCard adr field.
     
