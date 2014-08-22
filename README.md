@@ -166,8 +166,33 @@ curl -H"Authorization: Bearer credentials" https://host/locate/authority?postcod
             "postcode": "sw112dr",
             "country": "England",
             "gssCode": "E09000032",
-            "name": "Wandsworth"
+            "name": "Wandsworth",
+            "easting" : 394251,
+            "northing" : 806376,
+            "lat" : 57.14823168960546,
+            "long" : -2.0966478399737416,
+            "nhsRegionalHealthAuthority" : "S08000005",
+            "nhsHealthAuthority" : "S08000006",
+            "county" : "S08000004"
+            "ward" : "S13002483"
         }
+
+*   country: Derived from ONS codes: 
+    England     Scotland    Wales       N Ireland
+    E92000001   S92000003   W92000004   N92000002
+    
+*   gssCode: Unitary Authority, Metropolitan and Non- Metropolitan District, London Borough or Scottish Council Area in which postcode falls.
+
+*   easting/northing/lat/long: location of CPLC. CPLC is the location indicator for this code point. This is a point within the postcode area that is nearest the mean position of
+ postal addresses. Not geographical central point.
+ 
+*   nhsRegionalHealthAuthority: English Pan Strategic Health Authority in which CPLC falls. [optional]
+
+*   nhsHealthAuthority: English Strategic Health Authority or Scottish Health Board in which CPLC falls. [optional]
+
+*   county: County in which CPLC falls. [optional]
+
+*   ward: Electoral Ward or Division in which CPLC falls. [optional]
 
 ### Granularity
 
