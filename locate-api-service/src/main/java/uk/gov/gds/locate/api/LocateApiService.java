@@ -8,6 +8,7 @@ import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.mongojack.JacksonDBCollection;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthProvider;
 import uk.gov.gds.locate.api.authentication.BearerTokenAuthenticator;
@@ -63,6 +64,14 @@ public class LocateApiService extends Service<LocateApiConfiguration> {
         final UsageDao usageDao = configureRateMeterDao(credentialsDb);
         final AddressDao addressDao = configureAddressDao(locateDb);
         final PostcodeToAuthorityDao postcodeToAuthorityDao = configurePostcodeToAuthorityDao(locateDb);
+
+        /**
+         * Enable cors support
+         */
+        environment.addFilter(CrossOriginFilter.class, "*")
+                .setInitParam("allowedOrigins", configuration.getAllowedOrigins())
+                .setInitParam("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin,Authorization")
+                .setInitParam("allowedMethods", "OPTIONS,GET");
 
         /**
          * Resources

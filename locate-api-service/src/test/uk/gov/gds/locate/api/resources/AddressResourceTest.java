@@ -20,6 +20,8 @@ import uk.gov.gds.locate.api.helpers.OrderingBuilder;
 import uk.gov.gds.locate.api.helpers.PresentationBuilder;
 import uk.gov.gds.locate.api.model.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -97,11 +99,35 @@ public class AddressResourceTest extends ResourceTest {
     @Test
     public void shouldAllowAddressesFetchWithValidAuthCredentials() {
         try {
-            client().resource("/locate/addresses").header("Authorization", allDataFieldsToken).get(Object.class);
+            when(dao.findAllForPostcode("a11aa")).thenReturn(Collections.EMPTY_LIST);
+            client().resource("/locate/addresses?postcode=a11aa").header("Authorization", allDataFieldsToken).get(Object.class);
         } catch (UniformInterfaceException e) {
             fail("Should not have rejected an API call with valid auth headers");
         }
     }
+
+    @Test
+    public void shouldHaveAValidationFailureIfPostcodeTooLong() {
+        try {
+            client().resource("/locate/addresses?postcode=12345678901").header("Authorization", allDataFieldsToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"postcode is invalid\"}");
+        }
+    }
+
+    @Test
+    public void shouldHaveAValidationFailureIfFormatInvalid() {
+        try {
+            client().resource("/locate/addresses?format=swsw&postcode=pe191er").header("Authorization", allDataFieldsToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"format is invalid\"}");
+        }
+    }
+
 
     @Test
     public void shouldReturnAListOfAddressesForASuccessfulSearchWithAllFieldsToken() {
@@ -187,6 +213,7 @@ public class AddressResourceTest extends ResourceTest {
     }
 
 
+
     @Test
     public void shouldReturnAnEmptyListOfAddressesForAnUnsuccessfulSearch() {
         List<SimpleAddress> result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", allDataFieldsToken).get(new GenericType<List<SimpleAddress>>() {
@@ -200,6 +227,25 @@ public class AddressResourceTest extends ResourceTest {
         String result = client().resource("/locate/addresses?postcode=" + inValidPostcode).header("Authorization", allDataFieldsToken).get(String.class);
         assertThat(result).contains("[]");
         verify(dao, times(1)).findAllForPostcode(inValidPostcode);
+    }
+
+    @Test
+    public void shouldCallDaoWithTidyPostcode() throws UnsupportedEncodingException {
+        client().resource("/locate/addresses?postcode=" + URLEncoder.encode(" PE1 1eR ", "UTF-8")).header("Authorization", allDataFieldsToken).get(String.class);
+        verify(dao, times(1)).findAllForPostcode("pe11er");
+    }
+
+    @Test
+    public void shouldReturnAListOfVCardFormattedAddressesAsValidJSONForASuccessfulSearchWith() {
+        String result = client().resource("/locate/addresses?format=vcard&postcode=" + validPostcode).header("Authorization", allDataFieldsToken).get(String.class);
+        verify(dao, times(1)).findAllForPostcode(validPostcode);
+        assertThat(result).contains("\"x-uprn\":\"uprn\"");
+        assertThat(result).contains("\"extended-address\":\"property-test\"");
+        assertThat(result).contains("\"street-address\":\"street-test\"");
+        assertThat(result).contains("\"locality\":\"town-test\"");
+        assertThat(result).contains("\"region\":\"area-test\"");
+        assertThat(result).contains("\"postal-code\":\"postcode-test\"");
+        assertThat(result).contains("\"vcard\":\"ADR;:;;property-test;street-test;town-test;area-test;postcode-test;country\"");
     }
 
     @Override

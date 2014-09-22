@@ -29,7 +29,7 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
 
     private LocateApiConfiguration configuration = mock(LocateApiConfiguration.class);
     private UsageDao usageDao = mock(UsageDao.class);
-    private PostcodeToAuthority postcodeToAuthority = new PostcodeToAuthority("id", "gssCode", "country", "postcode", "name");
+    private PostcodeToAuthority postcodeToAuthority = new PostcodeToAuthority("id", "gssCode", "country", "postcode", "name", 1.1, 2.2, 3.3,4.4, "nhs-region","nhs","county","ward");
     private PostcodeToAuthorityDao dao = mock(PostcodeToAuthorityDao.class);
 
     @Before
@@ -87,10 +87,34 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldHaveAValidationFailureIfPostcodeTooLong() {
+        try {
+            client().resource("/locate/authority?postcode=12345678901").header("Authorization", validToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(422);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"postcode is invalid\"}");
+        }
+    }
+
+    @Test
+    public void shouldReturn404IfNotFound() {
+        when(dao.findForPostcode("postcode")).thenReturn(null);
+        try {
+            client().resource("/locate/authority?postcode=postcode").header("Authorization", validToken).get(Object.class);
+            fail("Fail should have been a validation error");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getStatus()).isEqualTo(404);
+            assertThat(e.getResponse().getEntity(String.class)).isEqualTo("{\"error\":\"not found\"}");
+        }
+    }
+
+
+    @Test
     public void shouldReturnAPostcodeToAuthorityObject() {
         PostcodeToAuthority result = client().resource("/locate/authority?postcode=a11aa").header("Authorization", validToken).get(PostcodeToAuthority.class);
         verify(dao, times(1)).findForPostcode("a11aa");
-        assertThat(result).isEqualsToByComparingFields(postcodeToAuthority);
+        assertThat(result).isLenientEqualsToByIgnoringFields(postcodeToAuthority, "id");
     }
 
     @Test
@@ -100,7 +124,15 @@ public class PostcodeToAuthorityResourceTest extends ResourceTest {
         assertThat(result).contains("\"postcode\":\"postcode\"");
         assertThat(result).contains("\"country\":\"country\"");
         assertThat(result).contains("\"gssCode\":\"gssCode\"");
-        assertThat(result).contains("\"_id\":\"id\"");
+        assertThat(result).contains("\"nhsRegionalHealthAuthority\":\"nhs-region\"");
+        assertThat(result).contains("\"nhsHealthAuthority\":\"nhs\"");
+        assertThat(result).contains("\"county\":\"county\"");
+        assertThat(result).contains("\"ward\":\"ward\"");
+        assertThat(result).contains("\"easting\":1.1");
+        assertThat(result).contains("\"northing\":2.2");
+        assertThat(result).contains("\"lat\":3.3");
+        assertThat(result).contains("\"long\":4.4");
+        assertThat(result).doesNotContain("id");
     }
 
     @Override

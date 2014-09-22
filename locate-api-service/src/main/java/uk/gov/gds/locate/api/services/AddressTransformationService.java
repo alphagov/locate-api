@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import uk.gov.gds.locate.api.model.Address;
+import uk.gov.gds.locate.api.model.VCard;
 import uk.gov.gds.locate.api.model.SimpleAddress;
 
 import javax.annotation.Nullable;
@@ -24,6 +25,16 @@ public class AddressTransformationService {
             @Override
             public SimpleAddress apply(@Nullable Address input) {
                 return new SimpleAddress(input);
+            }
+        });
+    }
+
+    public static List<VCard> addressToVCard(List<Address> addresses) {
+        return Lists.transform(addresses, new Function<Address, VCard>() {
+            @Nullable
+            @Override
+            public VCard apply(@Nullable Address input) {
+                return new VCard(input);
             }
         });
     }
