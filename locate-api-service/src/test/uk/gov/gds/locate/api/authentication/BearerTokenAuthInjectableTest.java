@@ -9,7 +9,7 @@ import org.junit.Test;
 import uk.gov.gds.locate.api.configuration.LocateApiConfiguration;
 import uk.gov.gds.locate.api.dao.UsageDao;
 import uk.gov.gds.locate.api.model.AuthorizationToken;
-import uk.gov.gds.locate.api.model.DataType;
+import uk.gov.gds.locate.api.model.Format;
 import uk.gov.gds.locate.api.model.QueryType;
 import uk.gov.gds.locate.api.model.Usage;
 
@@ -93,7 +93,7 @@ public class BearerTokenAuthInjectableTest {
         Usage exceededRate = new Usage("id", "identifier", 3, new Date());
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(exceededRate));
         when(configuration.getMaxRequestsPerDay()).thenReturn(2);
-        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL)));
+        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token")));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
         when(webContext.getPath()).thenReturn("path/to/resource");
         when(webContext.getMethod()).thenReturn("GET");
@@ -114,7 +114,7 @@ public class BearerTokenAuthInjectableTest {
         Usage bangOnRate = new Usage("id", "identifier", 2, new Date());
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(bangOnRate));
         when(configuration.getMaxRequestsPerDay()).thenReturn(2);
-        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL)));
+        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token")));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
         when(webContext.getPath()).thenReturn("path/to/resource");
         when(webContext.getMethod()).thenReturn("GET");
@@ -126,7 +126,7 @@ public class BearerTokenAuthInjectableTest {
     public void shouldAllowAValidHttpRequestWithUsageUnderTheMaximum() throws AuthenticationException {
         Usage notExceededRate = new Usage("id", "identifier", 0, new Date());
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.of(notExceededRate));
-        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL)));
+        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token")));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
         when(webContext.getPath()).thenReturn("path/to/resource");
         when(webContext.getMethod()).thenReturn("GET");
@@ -137,7 +137,7 @@ public class BearerTokenAuthInjectableTest {
     @Test
     public void shouldCreateAUsageRecordIfNoneExists() throws AuthenticationException {
         when(usageDao.findUsageByIdentifier("identifier")).thenReturn(Optional.<Usage>absent());
-        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL)));
+        when(mockAuthenticator.authenticate("good")).thenReturn(Optional.of(new AuthorizationToken("1", "name", "identifier", "organisation", "token")));
         when(webContext.getHeaderValue(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer good");
         when(webContext.getPath()).thenReturn("path/to/resource");
         when(webContext.getMethod()).thenReturn("GET");

@@ -3,16 +3,15 @@ package uk.gov.gds.locate.api.json;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import uk.gov.gds.locate.api.model.DataType;
-import uk.gov.gds.locate.api.model.QueryType;
+import uk.gov.gds.locate.api.model.Format;
 
 import java.io.IOException;
 
-public class DataTypeJsonDeserializer extends JsonDeserializer<DataType> {
+public class DataTypeJsonDeserializer extends JsonDeserializer<Format> {
 
     @Override
-    public DataType deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public Format deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         String json = parser.getText();
-        return DataType.parse(json);
+        return Format.parse(json);
     }
 }

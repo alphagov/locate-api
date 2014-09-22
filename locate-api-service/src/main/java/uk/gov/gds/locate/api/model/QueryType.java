@@ -36,9 +36,8 @@ public enum QueryType {
             return true;
         }
     });
-
-    private String type;
     private final Predicate<Address> predicate;
+    private String type;
 
     private QueryType(String type, Predicate<Address> predicate) {
         this.type = type;
@@ -51,7 +50,17 @@ public enum QueryType {
                 return queryType;
             }
         }
-        throw new IllegalArgumentException(String.format("No QueryType with value '%s'", value));
+        return ALL;
+    }
+
+    public static Boolean isValid(String check) {
+        for (QueryType queryType : QueryType.values()) {
+            if (queryType.getType().equals(check)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     public String getType() {

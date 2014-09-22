@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class PostcodeToAuthorityResourceTest extends ResourceTest {
-    private AuthorizationToken valid = new AuthorizationToken("1", "name", "identifier", "organisation", "token", QueryType.ALL, DataType.ALL);
+    private AuthorizationToken valid = new AuthorizationToken("1", "name", "identifier", "organisation", "token");
     private String validToken = String.format("Bearer %s", "token");
     private String inValidToken = String.format("Bearer %s", "bogus");
 
